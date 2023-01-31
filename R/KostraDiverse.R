@@ -10,11 +10,6 @@ HierarchyFromDummy = function(d){
   x[x$sign!=0 , ,drop=FALSE]
 }
 
-SetOne = function(x){
-  x[x>1] = 1
-  x[x<-1] = -1
-  x
-}
 
 
 
@@ -35,78 +30,6 @@ RemoveDuplicated = function(x,cols,printAndWarning=TRUE){
 
 
 
-PrintAllDuplicated = function(x,cols){
-  dp1 = duplicated(x[,cols, drop=FALSE])
-  dp2 = rev(duplicated(x[rev(seq_len(NROW(x))),cols, drop=FALSE]))
-  print(x[dp1 | dp2,])
-}
-
-
-
-
-
-
-#   # Funksjonen virker men ser ikke ut til å virke effektivt
-#   StepwiseSelectionCrossDataDummyHierarchy = function(dataDummyHierarchies,codeFrame,step=1000){
-#     print("StepwiseSelectionCrossDataDummyHierarchy")
-#     n=length(dataDummyHierarchies)
-#     if(n==0)
-#       return(dataDummyHierarchies)
-#     m = NROW(codeFrame)
-#     k=0L
-#     z=Matrix(0,m,NCOL(dataDummyHierarchies[[1]]))
-#     colnames(z) = colnames(dataDummyHierarchies[[1]])
-#     while(k<m){
-#       sel  = k+seq_len(min(step,m-k))
-#       zSel = SelectionCrossDataDummyHierarchy(dataDummyHierarchies,codeFrame[sel, ,drop=TRUE])
-#       z[sel,] = zSel
-#       k = max(sel)
-#     }
-#     z
-#   }
-
-
-#   # Funksjonen virker men ser ikke ut til å virke effektivt
-#   StepwiseSelectionCrossDataDummyHierarchyMultiplyWithValueMatrix = function(dataDummyHierarchies,codeFrame,step=1000,valueMatrix){
-#     print("StepwiseSelectionCrossDataDummyHierarchyMultiplyWithY")
-#     n=length(dataDummyHierarchies)
-#     if(n==0)
-#       return(Mult(dataDummyHierarchies, valueMatrix)) #return(dataDummyHierarchies %*% valueMatrix)
-#     m = NROW(codeFrame)
-#     k=0L
-#     #z=Matrix(0,m,NCOL(dataDummyHierarchies[[1]]))
-#     #z=Matrix(0,m,NCOL(valueMatrix))
-#     z=matrix(0,m,NCOL(valueMatrix))
-#   
-#     while(k<m){
-#       sel  = k+seq_len(min(step,m-k))
-#       xSel = SelectionCrossDataDummyHierarchy(dataDummyHierarchies,codeFrame[sel, ,drop=TRUE])
-#       #print(dim(xSel))
-#       #print(dim(valueMatrix))
-#       #print(sel)
-#   
-#       z[sel,] = as.matrix(Mult(xSel, valueMatrix)) #as.matrix(xSel %*% valueMatrix)
-#       k = max(sel)
-#     }
-#     colnames(z) = colnames(valueMatrix)
-#     z
-#   }
-
-
-
-
-DummyHierarchy2 = function(x,inputInOutput=FALSE){
-  hierarchies = list(x)
-  i=1
-  DummyHierarchy(mapsFrom=hierarchies[[i]]$mapsFrom,
-                 mapsTo=hierarchies[[i]]$mapsTo,
-                 mapsInput= attr(hierarchies[[i]],"mapsInput"),    # Må med siden: 'NA' indices are not (yet?) supported for sparse Matrices
-                 keepCodes = attr(hierarchies[[i]],"keepCodes"),
-                 sign=hierarchies[[i]]$sign,
-                 level=hierarchies[[i]]$level,
-                 inputInOutput=inputInOutput[i])
-}
-
 LagInteger = function(x){
   z = as.integer(x)
   if(identical( as.numeric(as.vector(z)),as.numeric(as.vector(x))))
@@ -116,21 +39,6 @@ LagInteger = function(x){
 }
 
 
-
-#' SortRows with rownames removed
-#'
-#' @param x as input to SortRows
-#'
-#' @return sorted version of x
-#' @export
-#' @importFrom SSBtools SortRows
-#' @keywords internal
-#'
-Srn = function(x){
-  x =SortRows(x)
-  rownames(x) = NULL
-  x
-}
 
 
 #' PrintHeadTail
@@ -215,32 +123,6 @@ AutoNetting = function(nettinghierarki,hierarki, title ="nettinghierarki", toRem
 }
 
 
-#' @rdname AutoNetting
-#' @export
-#' @keywords internal
-AutoNettingFF = function(nettinghierarki,hierarki, title ="nettinghierarki", toRemove = FALSE,singleLoop=FALSE)
-  AutoNetting(nettinghierarki,hierarki,title,toRemove,singleLoop)
-
-#' @rdname AutoNetting
-#' @export
-#' @keywords internal
-AutoNettingFT = function(nettinghierarki,hierarki, title ="nettinghierarki", toRemove = FALSE,singleLoop=TRUE)
-  AutoNetting(nettinghierarki,hierarki,title,toRemove,singleLoop)
-
-#' @rdname AutoNetting
-#' @export
-#' @keywords internal
-AutoNettingTF = function(nettinghierarki,hierarki, title ="nettinghierarki", toRemove = TRUE,singleLoop=FALSE)
-  AutoNetting(nettinghierarki,hierarki,title,toRemove,singleLoop)
-
-#' @rdname AutoNetting
-#' @export
-#' @keywords internal
-AutoNettingTT = function(nettinghierarki,hierarki, title ="nettinghierarki", toRemove = TRUE,singleLoop=TRUE)
-  AutoNetting(nettinghierarki,hierarki,title,toRemove,singleLoop)
-
-
-
 
 #' @rdname AutoNetting
 #' @export
@@ -282,12 +164,6 @@ AutoNettingNy = function(nettinghierarki,hierarki, title ="nettinghierarki",loop
 }
 
 
-
-#' @rdname AutoNetting
-#' @export
-#' @keywords internal
-AutoNettingNyFALSE = function(nettinghierarki,hierarki, title ="nettinghierarki",loop=FALSE)
-  AutoNettingNy(nettinghierarki,hierarki,title,loop)
 
 
 #' @rdname AutoNetting
@@ -351,30 +227,6 @@ AutoNettingCopyOld = function(nettinghierarki,hierarki, title ="nettinghierarki"
 
 
 
-FixRegionkodeNy = function(region,warningText=NULL,viaFactor=TRUE){
-  if(is.numeric(region))
-    region= as.character(region)
-  if(is.factor(region)){
-    viaFactor = TRUE
-  } else {
-    if(viaFactor){
-      region = as.factor(region)
-    }
-  }
-  if(viaFactor)
-    x= as.integer(attr(region,"levels"))
-  else
-    x= as.integer(region)
-  z= Number(x,6)
-  z[x<=9999] = Number(x[x<=9999],4)
-  if(!viaFactor)
-    return(z)
-  attr(region,"levels") = z
-  as.character(region)
-}
-
-
-
 
 
 
@@ -416,39 +268,6 @@ FixRegionkode <- function(region, warningText = NULL) {
   region
 }
 
-
-
-
-
-#FixRegionkodeGammelFunksjon = function(region){
-#  x= as.integer(region)
-#  z= Number(x,6)
-#  z[x<=9999] = Number(x[x<=9999],4)
-#  z
-#}
-
-
-
-#  WildcardGlobbingOld = function(x,wg,sign=TRUE){
-#    #print("WildcardGlobbing")
-#    #print(dim(x))
-#    #print(dim(wg))
-#    #print(wg)
-#    sel = rep(FALSE,dim(x)[1])
-#    for(i in 1:NROW(wg)){
-#      seli = rep(TRUE,dim(x)[1])
-#      for(j in 1:NCOL(wg)){
-#        seli = seli&grepl(glob2rx(wg[i,j]) , x[,names(wg)[j]])
-#      }
-#      sel = sel|seli
-#    }
-#    #if(!sign)
-#    #  return(x[!sel, ,drop=FALSE])
-#    #x[sel, ,drop=FALSE]
-#    if(!sign)
-#      return(!sel)
-#    sel
-#  }
 
 
 
