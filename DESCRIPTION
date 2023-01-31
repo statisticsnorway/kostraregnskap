@@ -1,0 +1,15 @@
+Package: kostraregnskap
+Type: Package
+Title: kostraregnskap
+Version: 0.0.1
+Date: 2023-01-30
+Author: Øyvind Langsrud
+Maintainer: Øyvind Langsrud <oyl@ssb.no>
+Depends: R (>= 3.0.0), SSBtools, Matrix, stringr 
+Imports: utils
+Description: kostraregnskap
+License: MIT + file LICENSE
+RoxygenNote: 7.2.3
+Encoding: UTF-8
+Suggests: 
+    testthat
