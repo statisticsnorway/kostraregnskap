@@ -218,69 +218,19 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #'  #==========================================================================
 #'  #     Innlesing av data og omkoding
 #'  #===========================================================================
-#' # Når lesDataFraS er TRUE kjøres eksempelkoden omtrent slik den var under utvikling av koden.
-#' # Ved FALSE brukes data som ligger i pakken der bare noen regioner er med, men det kjøres da
-#' # på to år samtidig. Kommentarer i koden om beregningstid og antall rader vil ikke stemme.
-#' lesDataFraS <- FALSE
-#' if (!lesDataFraS){
-#'   kData = kr_data("kostraRegnskapDataPen")       # kr_data("kostraRegnskapData") er alternativ der
-#'   inputdata <- kData$data                           #    automatisk omkoding trengs (som fixRegionkode)
-#'   funksjonshierarki <- kData$funksjonshierarki      #    Fungerer like bra, men med flere warning
-#'   artshierarki <- kData$artshierarki
-#'   inputdata_saer <- kData$data_saer
-#'   artshierarki_nettinger <- kData$artshierarki_nettinger
-#'   artshierarki_nettinger_kasse <- kData$artshierarki_nettinger_kasse
-#'   stjerne <- kData$stjernetabell
-#'   formler <- kData$formler
-#' } else {
-#'
-#' dataPath <- "S:/Prosjekt/2228 KOSTRA publisering/Metode/Regnskap/Matrise-klare filer"
-#' #dataPath <- "C:\\Users\\oyl\\Documents\\work\\Rworking\\regnskap\\Matrise-klare filer"
-#'
-#' aar = "2016" # "2015" kan også velges
-#'
-#' dataPath <- paste(dataPath,aar,sep="/")
-#'
-#' funksjonFil     <- paste(dataPath,"/Funksjonshierarki_",aar,".csv",sep="")
-#' artFil          <- paste(dataPath,"/Artshierarki_",aar,".csv",sep="")
-#' artFilnett      <- paste(dataPath,"/Artshierarki_nettinger_s\U00E6rbedrift_",aar,".csv",sep="")
-#' artFilnettKasse      <- paste(dataPath,"/Artshierarki_nettinger_kasse_",aar,".csv",sep="")
-#'
-#' dataFil         <- paste(dataPath,"/Inputdata_fylker_kommuner_bydeler_",aar,".csv",sep="")
-#' dataFilsaer     <- paste(dataPath,"/Inputdata_s\U00E6rbedrifter_",aar,".csv",sep="")
-#'
-#' kombinasjonerFil <- paste(dataPath,"/../../Alle kombinasjoner vi trenger som output.csv",sep="")
-#' stjerneFil       <- paste(dataPath,"/StjerneKombinasjoner_",aar,".csv",sep="")
-#' formelFil       <- paste(dataPath,"/Formler_",aar,".csv",sep="")
-#'
-#' funksjonshierarki      <- read.csv2(funksjonFil,colClasses=c("integer","character","character","character"))
-#' artshierarki           <-  read.csv2(artFil,colClasses=c("integer","character","character","character"))
-#' artshierarki_nettinger <-  read.csv2(artFilnett,colClasses=c("integer","character","character","character"))
-#' artshierarki_nettinger_kasse <-  read.csv2(artFilnettKasse,colClasses=c("integer","character","character","character"))
-#'
-#' inputdata              <-  read.csv2(dataFil,colClasses=c("integer","character","character","character","character","integer"))
-#' inputdata_saer <-  read.csv2(dataFilsaer,colClasses=c("integer","character","character","character","character","integer"))
-#'
-#' stjerne    <- read.csv2(stjerneFil,colClasses="character")
-#' formler   <- read.csv2(formelFil,colClasses="character")
-#'
-#' # Endrer navn i data fra fylkesregion til region
-#' names(inputdata)[names(inputdata)=="fylkesregion"] <- "region"
-#' names(inputdata_saer)[names(inputdata_saer)=="fylkesregion"] <- "region"
-#' names(stjerne)[names(stjerne)=="fylkesregion"] <- "region"
-#'
-#' # Leser kombinasjoner og omkoder
-#' kombinasjoner <- read.csv2(kombinasjonerFil,colClasses="character")
-#' kombinasjonerD  <- kombinasjoner$kontoklasse %in% c("1","3")
-#' kombinasjoner$kontoklasse <- "I"
-#' kombinasjoner$kontoklasse[kombinasjonerD] <- "D"
-#' kombinasjoner <- unique(kombinasjoner) #  25312 kombinasjoner av funksjon, art og kontoklasse
-#'
-#'
-#' # Legger til manglende ledende 0-er
-#' inputdata$region = FixRegionkode(inputdata$region)
-#' inputdata_saer$region = FixRegionkode(inputdata_saer$region)
-#' }
+#' # Her brukes data som ligger i pakken der bare noen regioner er med. 
+#' # Det kjøres da på to år samtidig. 
+#' # Kommentarer i koden om beregningstid og antall rader vil ikke stemme.
+#' 
+#' kData = kr_data("kostraRegnskapDataPen")    # kr_data("kostraRegnskapData") er alternativ der
+#' inputdata <- kData$data                      # automatisk omkoding trengs (som fixRegionkode)
+#' funksjonshierarki <- kData$funksjonshierarki # Fungerer like bra, men med flere warning
+#' artshierarki <- kData$artshierarki
+#' inputdata_saer <- kData$data_saer
+#' artshierarki_nettinger <- kData$artshierarki_nettinger
+#' artshierarki_nettinger_kasse <- kData$artshierarki_nettinger_kasse
+#' stjerne <- kData$stjernetabell
+#' formler <- kData$formler
 #'
 #'  #==========================================================================
 #'  #   Eksempler med:   Konsern  = Saebedrift + Nettinger + Kasse
@@ -288,116 +238,90 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #'
 #' # Med stjernetabell. Denne gir 28215120 rader. [Beregningstid: 1 minutt]
 #' # MERK: Denne kan krasje ved lite tilgjengelig minne som ved 32 bit versjon av R
-#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, stjernetabell = stjerne)
+#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'            artshierarki_nettinger, stjernetabell = stjerne)
 #'
-#' if(!lesDataFraS)
-#'    kombinasjoner <- unique(z[, c("art", "funksjon", "kontoklasse")])
+#' kombinasjoner <- unique(z[, c("art", "funksjon", "kontoklasse")])
 #'
 #' rm(z) # sletter z frigjoer minne
 #'
-#' # Med kombinasjoner. Denne gir 23388288 rader. [Beregningstid: 15 sek] (25312 kombinasjoner * 462 regioner * 2 regnskapsomfang)
-#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, kombinasjoner = kombinasjoner)
+#' # Med kombinasjoner. Denne gir 23388288 rader. [Beregningstid: 15 sek] 
+#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'            artshierarki_nettinger, kombinasjoner = kombinasjoner)
 #'
 #' # plukker ut 12 rader og fjerner radnavn
-#' z12a <- z[z$region %in% c("0101", "0100", "0301") & z$funksjon %in% c("100", "FG2") & z$art %in% c("AGI6", "AGD10"), ]
+#' z12a <- z[z$region %in% c("0101", "0100", "0301") & z$funksjon %in% c("100", "FG2") 
+#'               & z$art %in% c("AGI6", "AGD10"), ]
 #' rownames(z12a) <- NULL
 #'
 #' rm(z) # sletter z frigjoer minne
 #'
 #' # Samme svar kan beregnes mer direkte
-#' z12b <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, kombinasjoner = kombinasjoner, regioner = c("0101", "0100", "0301"), funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
+#' z12b <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'               artshierarki_nettinger, kombinasjoner = kombinasjoner, 
+#'               regioner = c("0101", "0100", "0301"), 
+#'               funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
+#'               
 #' identical(z12a, z12b)  # Gir TRUE
 #'
 #'
-#' # Uten kombinasjoner i input blir det 48 rader i output (2 regnskapsomfang) X (3 regioner) X (2 funksjoner) X (2 arter) X (2 kontoklasser)
-#' z48 <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, regioner = c("0101", "0100", "0301"), funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
+#' # Uten kombinasjoner i input blir det 48 rader i output 
+#' #   (2 regnskapsomfang) X (3 regioner) X (2 funksjoner) X (2 arter) X (2 kontoklasser)
+#' z48 <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'              artshierarki_nettinger, regioner = c("0101", "0100", "0301"), 
+#'              funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
 #'
-#' # Varianten med factor-output krever mindre minne. Denne forandringen gir ingen forskjell for resultat skrevet til csv-fil.
-#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, stjernetabell = stjerne, output = "enFactor")
+#' # Varianten med factor-output krever mindre minne. 
+#' # Denne forandringen gir ingen forskjell for resultat skrevet til csv-fil.
+#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'            artshierarki_nettinger, stjernetabell = stjerne, output = "enFactor")
 #'
 #' # plukker ut 24 rader og fjerner radnavn
-#' z24a <- z[z$region %in% c("0101", "0100", "0301") & z$funksjon %in% c("100", "FG2") & z$art %in% c("AGI6", "AGD10"), ]
+#' z24a <- z[z$region %in% c("0101", "0100", "0301") & z$funksjon %in% c("100", "FG2") 
+#'           & z$art %in% c("AGI6", "AGD10"), ]
 #' rownames(z24a) <- NULL
 #'
 #' # Samme svar kan beregnes mer direkte [Beregningstid: 1 sekund]
-#' z24b <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, stjernetabell = stjerne, regioner = c("0101", "0100", "0301"), funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
+#' z24b <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'               artshierarki_nettinger, stjernetabell = stjerne, 
+#'               regioner = c("0101", "0100", "0301"), 
+#'               funksjoner = c("100", "FG2"), arter = c("AGI6", "AGD10"))
 #' # z24a og z24b er ikke identiske pga ulik ordning av rader
 #'
 #' rm(z) # sletter z frigjoer minne
 #'
-#' # Med stjernetabell og formler. Bare Oslo og Akershus, funksjon FG1 FG2 FG4 og arter som starter med AGD.
-#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, stjernetabell = stjerne, regioner = c("02??","03??") , formler = formler, funksjoner = "FG?", arter = "AGD*")
+#' # Med stjernetabell og formler. Bare Oslo og Akershus,
+#' # funksjon FG1 FG2 FG4 og arter som starter med AGD.
+#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'            artshierarki_nettinger, stjernetabell = stjerne, regioner = c("02??","03??") , 
+#'            formler = formler, funksjoner = "FG?", arter = "AGD*")
 #'
 #'
-#' # Kombinerer stjernetabell og kombinasjoner. Denne gir 14360352 rader. [Beregningstid: 1 minutt] MERK: igjen kreves minne
-#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, kombinasjoner = kombinasjoner, stjernetabell = stjerne)
+#' # Kombinerer stjernetabell og kombinasjoner. Denne gir 14360352 rader. [Beregningstid: 1 minutt]
+#' z <- KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'            artshierarki_nettinger, kombinasjoner = kombinasjoner, stjernetabell = stjerne)
 #'
 #' # Lite eksempel med output = "en" (som default)
-#' KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, regioner = "0101", funksjoner = "FG2", arter = "AGD10")
+#' KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'       artshierarki_nettinger, regioner = "0101", funksjoner = "FG2", arter = "AGD10")
 #'
 #' # Samme eksempel med output = "fire"
-#' KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, regioner = "0101", funksjoner = "FG2", arter = "AGD10", output = "fire")
+#' KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, 
+#'       artshierarki_nettinger, regioner = "0101", funksjoner = "FG2", arter = "AGD10", 
+#'       output = "fire")
 #'
 #'  #===============================================================================
 #'  #   Eksempler med:   Konsern  = Saebedrift + Nettinger + Kasse + Kassenettinger
 #'  #===============================================================================
 #'
 #'
-#'    zEn   <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,inputdata_saer,artshierarki_nettinger,artshierarki_nettinger_kasse,stjernetabell=stjerne,regioner = c("0101", "0100",  "0301"),formler=formler)
+#'    zEn   <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,inputdata_saer,
+#'                   artshierarki_nettinger,artshierarki_nettinger_kasse,
+#'                   stjernetabell=stjerne,regioner = c("0101", "0100",  "0301"),formler=formler)
 #'
-#'    zFem  <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,inputdata_saer,artshierarki_nettinger,artshierarki_nettinger_kasse,stjernetabell=stjerne,regioner = c("0101", "0100",  "0301"),output="fire",formler=formler)
-#'
-#'
-#'  # ==========================================================================
-#'  #   Gamle eksempler uten data_saer og artshierarki_nettinger
-#'  #===========================================================================
-#'
-#' if (!lesDataFraS){
-#'   dat <- kData$data
-#'   datS <- kData$data_saer
-#'   dat$kontoklasse <- CharacterReCode(dat$kontoklasse, c("D", "I"), c("1", "2"))
-#'   datS$kontoklasse <- CharacterReCode(datS$kontoklasse, c("D", "I"), c("3", "4"))
-#'   inputdata <- rbind(dat, datS)
-#'   funksjonshierarki <- kData$funksjonshierarki
-#'   artshierarki <- kData$artshierarki
-#'   z <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki)
-#'   kombinasjoner <- unique(z[, c("art", "funksjon", "kontoklasse")])
-#' } else {
-#' dataPath <- "S:/Prosjekt/2228 KOSTRA publisering/Metode/Regnskap"
-#' #dataPath <- "C:\\Users\\oyl\\Documents\\work\\Rworking\\regnskap"
-#'
-#' funksjonFil <- paste(dataPath,"Funksjonshierarki.csv",sep="/")
-#' artFil      <- paste(dataPath,"Artshierarki_uten_nettinger.csv",sep="/")
-#' dataFil     <- paste(dataPath,"Inputdata_kommuner_fylker_2016.csv",sep="/")
-#' kombinasjonerFil <- paste(dataPath,"Alle kombinasjoner vi trenger som output.csv",sep="/")
-#'
-#' funksjonshierarki <- read.csv2(funksjonFil,colClasses=c("integer","character","character","character"))
-#' artshierarki <-  read.csv2(artFil,colClasses=c("integer","character","character","character","integer"))
-#' inputdata <-  read.csv2(dataFil,colClasses=c("integer","character","character","character","character","integer"))
-#' kombinasjoner <- read.csv2(kombinasjonerFil,colClasses="character")
-#'
-#' # Endrer navn i data fra fylkesregion til region
-#' names(inputdata)[2] <- "region"
-#'
-#' inputdata$region = FixRegionkode(inputdata$region) # ledende 0-er legges til
-#' }
-#'
-#' # Output data som definert av kombinasjonerFil
-#' z <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,kombinasjoner=kombinasjoner)
-#'
-#' # Trekkker 500 tilfeldige kombinasjoner og kjorer med det
-#' kombinasjoner500 = kombinasjoner[sample(NROW(kombinasjoner),500),]
-#' z <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,kombinasjoner=kombinasjoner500)
-#'
-#' if (lesDataFraS){
-#'   # Trekkker 100 tilfeldige regioner og kjorer med det
-#'   regioner100 = sample(unique(inputdata$region),100)
-#'   z <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,kombinasjoner=kombinasjoner500,regioner=regioner100)
-#'
-#'   # Minidata
-#'   z <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,kombinasjoner=kombinasjoner500[1:5,],regioner=regioner100[1:5])
-#'   print(z)
-#' }
+#'    zFem  <- KostraRegnskap(inputdata,funksjonshierarki,artshierarki,inputdata_saer,
+#'                   artshierarki_nettinger,artshierarki_nettinger_kasse,stjernetabell=stjerne,
+#'                   regioner = c("0101", "0100",  "0301"),output="fire",formler=formler)
 #'
 #'
 KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer=NULL,

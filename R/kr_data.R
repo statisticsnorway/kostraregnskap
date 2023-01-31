@@ -32,7 +32,25 @@ kr_data <- function(dataset, path = NULL) {
   return(NULL)
 }
 
+#' Datasets returned by kr_data()
+#'
+#' @docType data
+#' @keywords datasets internal
+#' @name kostraRegnskapData
+NULL
+
+#' @rdname kostraRegnskapData
+#' @name kostraRegnskapDataPen
+NULL
 
 
+#' @rdname kostraRegnskapData
+#' @name balanseRegnskapData
+NULL
+
+
+#' @rdname kostraRegnskapData
+#' @name balanseRegnskapDataPen
+NULL
 
 

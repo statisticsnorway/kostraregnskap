@@ -5,6 +5,7 @@
 #' @param a a
 #' @param valueName Parameter to Stack
 #' @param indName Parameter to Stack
+#' @param doStack Stacked output when TRUE
 #'
 #' @return Data frame where the "weights in weighted sum" is named as sign. Firs row (before stacking) contains the "results".
 #' @export
@@ -19,7 +20,8 @@
 #' rowSelect <- data.frame(age = "Y15-64", geo = "Europe", stringsAsFactors = FALSE)
 #'
 #' # Create input
-#' a <- HierarchyCompute(x, list(age = ageHier, geo = geoHier, year = "colFactor"), "ths_per", rowSelect = rowSelect, output = "matrixComponents")
+#' a <- HierarchyCompute(x, list(age = ageHier, geo = geoHier, year = "colFactor"), 
+#'           "ths_per", rowSelect = rowSelect, output = "matrixComponents")
 #'
 #'
 #' SingleRowHierarchyComputations(a)

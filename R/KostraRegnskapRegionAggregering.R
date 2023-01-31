@@ -31,8 +31,8 @@
 #' @note Kjernefunksjonalitet i funksjonen kan på sikt ende opp som en ny funksjon i pakka SSBtools
 #'
 #' @examples
-#' hierarki <- kostraregnskap:::Get_litehierarki()           # Ta bort Kostra::: dersom funksjonen er hentet med source(....
-#' data22 <- kostraregnskap:::Get_bev_basis_R_36()[1:22, ]   # Ta bort Kostra::: dersom funksjonen er hentet med source(....
+#' hierarki <- kostraregnskap:::Get_litehierarki()          
+#' data22 <- kostraregnskap:::Get_bev_basis_R_36()[1:22, ] 
 #' KostraRegnskapRegionAggregering(data22, hierarki)
 #' KostraRegnskapRegionAggregering(data22, hierarki, drop = NA)
 #' KostraRegnskapRegionAggregering(data22, hierarki, drop = FALSE)

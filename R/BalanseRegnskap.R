@@ -113,6 +113,7 @@ BalanseRegnskap = function(data,kapittelhierarki,
 #' @return Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input
 #' @export
 #' @importFrom SSBtools CharacterDataFrame WildcardGlobbingVector Match RowGroups CrossCodeFrames HierarchyCompute HierarchyFix ForceCharacterDataFrame DummyHierarchy Number matlabColon
+#' @importFrom SSBtools RbindAll Stack MatrixPaste
 #' @importFrom utils flush.console head tail
 #' @importFrom stringr str_replace_all str_replace
 #'
@@ -120,29 +121,21 @@ BalanseRegnskap = function(data,kapittelhierarki,
 #'
 #' @examples
 #'
-#' # Ved FALSE brukes data som ligger i pakken der bare noen regioner er med.
+#' # Her brukes data som ligger i pakken der bare noen regioner er med.
 #'
-#' lesDataFraS <- FALSE
-#' if (!lesDataFraS){
-#'   bData <- kr_data("balanseRegnskapDataPen")   # kr_data("balanseRegnskapDataPen") er alternativ der
-#'   inputdata <- bData$data                         #    automatisk omkoding trengs (som fixRegionkode)
-#'   hierarki <- bData$kapittelhierarki              #    Fungerer like bra, men med flere warning
-#' } else {
-#'
-#'   dataPath <- "S:/Prosjekt/2228 KOSTRA publisering/Metode/Regnskap/R_balanse"
-#'   # dataPath <- 'C:\\Users\\oyl\\Documents\\work\\Rworking\\regnskap\\R_balanse'
-#'
-#'   hierarkiFil <- paste(dataPath, "/Kapittel_hierarki_2016_bal_KLASS", ".csv", sep = "")
-#'   dataFil <- paste(dataPath, "/Inputdata_balanse_2016", ".csv", sep = "")
-#'   hierarki <- read.csv2(hierarkiFil, colClasses = c("character"))
-#'   inputdata <- read.csv2(dataFil, colClasses = c("integer", "character", "character", "character", "character", "integer"))
-#' }
+#' bData <- kr_data("balanseRegnskapDataPen") # kr_data("balanseRegnskapDataPen") er alternativ der
+#' inputdata <- bData$data                    #    automatisk omkoding trengs (som fixRegionkode)
+#' hierarki <- bData$kapittelhierarki         #    Fungerer like bra, men med flere warning
 #'
 #' z <- BalanseRegnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301", "1100"))
-#' xA <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "A", kapitler = "KG3")
-#' xB <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "B", kapitler = "KG3")
-#' yA <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "A", kapitler = "KG3")
-#' yB <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "B", kapitler = "KG3")
+#' xA <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "A", 
+#'                                     kapitler = "KG3")
+#' xB <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "B", 
+#'                                     kapitler = "KG3")
+#' yA <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "A", 
+#'                                     kapitler = "KG3")
+#' yB <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "B", 
+#'                                     kapitler = "KG3")
 BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
                           kombinasjoner=NULL,
                           regioner=NULL,

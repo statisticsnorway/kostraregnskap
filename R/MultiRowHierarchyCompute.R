@@ -5,7 +5,6 @@
 #' @param a a
 #' @param drop0 see code
 #' @param ind see code
-#' @param doStack Stacked output when TRUE
 #' @param valueName Parameter to Stack
 #' @param indName Parameter to Stack
 #'
@@ -22,7 +21,8 @@
 #' rowSelect = data.frame(geo = "Europe", age = c("Y15-64", "Y15-29"), year="2015")
 #'
 #' # Create input
-#' a <- HierarchyCompute(x, list(age = ageHier, geo = geoHier, year = "rowFactor"), "ths_per", rowSelect = rowSelect, output = "matrixComponents")
+#' a <- HierarchyCompute(x, list(age = ageHier, geo = geoHier, year = "rowFactor"), 
+#'          "ths_per", rowSelect = rowSelect, output = "matrixComponents")
 #'
 #' MultiRowHierarchyComputations(a)
 #'
