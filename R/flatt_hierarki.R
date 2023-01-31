@@ -84,6 +84,7 @@ flatt_hierarki <- function(hierarki, copy_hierarki = NULL, periode = NULL,
 #'
 #' @return Ett (flatt) hierarki kodet på spesiell måte slik at alt samles.
 #' @export
+#' @importFrom SSBtools DummyHierarchies
 #' 
 #' @seealso \code{\link{flatt_hierarki}}
 #'
