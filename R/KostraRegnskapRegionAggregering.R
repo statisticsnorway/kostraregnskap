@@ -31,8 +31,8 @@
 #' @note Kjernefunksjonalitet i funksjonen kan på sikt ende opp som en ny funksjon i pakka SSBtools
 #'
 #' @examples
-#' hierarki <- Kostra:::Get_litehierarki()           # Ta bort Kostra::: dersom funksjonen er hentet med source(....
-#' data22 <- Kostra:::Get_bev_basis_R_36()[1:22, ]   # Ta bort Kostra::: dersom funksjonen er hentet med source(....
+#' hierarki <- kostraregnskap:::Get_litehierarki()           # Ta bort Kostra::: dersom funksjonen er hentet med source(....
+#' data22 <- kostraregnskap:::Get_bev_basis_R_36()[1:22, ]   # Ta bort Kostra::: dersom funksjonen er hentet med source(....
 #' KostraRegnskapRegionAggregering(data22, hierarki)
 #' KostraRegnskapRegionAggregering(data22, hierarki, drop = NA)
 #' KostraRegnskapRegionAggregering(data22, hierarki, drop = FALSE)
@@ -77,7 +77,7 @@ KostraRegnskapRegionAggregering <- function(data, hierarki, slettInput0=FALSE, s
   UniqueHere     <- UniqueByMatch
 
   if(fixRegionkode)
-    hierarki$from = Kostra::FixRegionkode(hierarki$from,"Regionskoder i hierarki endret")
+    hierarki$from = kostraregnskap::FixRegionkode(hierarki$from,"Regionskoder i hierarki endret")
 
   hi <- SSBtools::AutoHierarchies(list(hi=hierarki) ,  hierarchyVarNames = c(mapsFrom = "from", mapsTo = "to", sign = "sign"))[[1]]
   dummyHierarchy <- SSBtools::DummyHierarchy( hi$mapsFrom, hi$mapsTo, hi$sign, hi$level)

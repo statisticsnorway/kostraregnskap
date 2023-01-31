@@ -1,9 +1,3 @@
-# Hack since bug in Matrix
-# https://r-forge.r-project.org/tracker/index.php?func=detail&aid=6728&group_id=61&atid=294
-Mult <- SSBtools:::Mult
-
-
-
 #' @rdname KostraRegnskap
 #' @note KostraRegnskapBeregningInput og KostraRegnskapBeregningHierarki går via funksjonen KostraRegnskapBeregning.
 #' Parametere til den funksjonen trengs bortsett fra «output».
@@ -229,7 +223,7 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #' # på to år samtidig. Kommentarer i koden om beregningstid og antall rader vil ikke stemme.
 #' lesDataFraS <- FALSE
 #' if (!lesDataFraS){
-#'   kData = KostraData("kostraRegnskapDataPen")       # KostraData("kostraRegnskapData") er alternativ der
+#'   kData = kr_data("kostraRegnskapDataPen")       # kr_data("kostraRegnskapData") er alternativ der
 #'   inputdata <- kData$data                           #    automatisk omkoding trengs (som fixRegionkode)
 #'   funksjonshierarki <- kData$funksjonshierarki      #    Fungerer like bra, men med flere warning
 #'   artshierarki <- kData$artshierarki
@@ -1552,8 +1546,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
   # Kan legge inn warning dersom noe måtte fjernes (dimnsjon redusert)
 
-  mat32 = Mult(mat3H[,ix3,drop=FALSE], mat2H[ix2, ,drop=FALSE]) #mat3H[,ix3,drop=FALSE] %*% mat2H[ix2, ,drop=FALSE]
-  if(isnk) mat41 = Mult(mat4H[,ix4,drop=FALSE], mat1H[ix1, ,drop=FALSE]) #mat4H[,ix4,drop=FALSE] %*% mat1H[ix1, ,drop=FALSE]
+  mat32 = mat3H[,ix3,drop=FALSE] %*% mat2H[ix2, ,drop=FALSE]
+  if(isnk) mat41 = mat4H[,ix4,drop=FALSE] %*% mat1H[ix1, ,drop=FALSE]
 
 
 
@@ -1690,14 +1684,14 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     if(beregningInput){
       if(!is.null(formelMatrise)){
-        a1$dataDummyHierarchy = Mult(formelMatrise$formelMatrise, a1$dataDummyHierarchy) #formelMatrise$formelMatrise %*% a1$dataDummyHierarchy
+        a1$dataDummyHierarchy = formelMatrise$formelMatrise %*% a1$dataDummyHierarchy
         a1$toCrossCode = formelMatrise$codesLeft
         rownames(a1$dataDummyHierarchy) = NULL
 
         if(!onlyB){
-        a2$dataDummyHierarchy = Mult(formelMatrise$formelMatrise, a2$dataDummyHierarchy) #formelMatrise$formelMatrise %*% a2$dataDummyHierarchy
-        a3$dataDummyHierarchy = Mult(formelMatrise$formelMatrise, a3$dataDummyHierarchy) #formelMatrise$formelMatrise %*% a3$dataDummyHierarchy
-        a4$dataDummyHierarchy = Mult(formelMatrise$formelMatrise, a4$dataDummyHierarchy) #formelMatrise$formelMatrise %*% a4$dataDummyHierarchy
+        a2$dataDummyHierarchy = formelMatrise$formelMatrise %*% a2$dataDummyHierarchy
+        a3$dataDummyHierarchy = formelMatrise$formelMatrise %*% a3$dataDummyHierarchy
+        a4$dataDummyHierarchy = formelMatrise$formelMatrise %*% a4$dataDummyHierarchy
 
 
         a2$toCrossCode = formelMatrise$codesLeft
