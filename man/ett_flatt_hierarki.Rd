@@ -23,24 +23,24 @@ ett_flatt_hierarki(
 
 \item{periode}{Ved flere perioder i hierarkier, må en periode velges.}
 
-\item{fix}{Ved `TRUE` (default): Som `fix` i \code{\link{flatt_hierarki}}
-samt utvidelser basert på from-koden `"COPY"`}
+\item{fix}{Ved \code{TRUE} (default): Som \code{fix} i \code{\link{flatt_hierarki}}
+samt utvidelser basert på from-koden \code{"COPY"}}
 
-\item{flatt}{Hvorvidt flatt hierarki skal returneres. 
-Ved `FALSE` returneres resultat etter `fix` og
+\item{flatt}{Hvorvidt flatt hierarki skal returneres.
+Ved \code{FALSE} returneres resultat etter \code{fix} og
 kombinering til ett hierarki.}
 
-\item{g}{Flatt hierarki begrenses til `abs(sign)>g`.}
+\item{g}{Flatt hierarki begrenses til \code{abs(sign)>g}.}
 }
 \value{
 Ett (flatt) hierarki kodet på spesiell måte slik at alt samles.
 }
 \description{
-artshierarki, artshierarki_nettinger og artshierarki_nettinger_kasse 
+artshierarki, artshierarki_nettinger og artshierarki_nettinger_kasse
 settes sammen til ett hierarki. Deretter genereres flatt hierarki fra dette.
 }
 \details{
-Underliggende funksjon er samme funksjon som brukes til beregningsteter. 
+Underliggende funksjon er samme funksjon som brukes til beregningsteter.
 Et unntak er at denne funksjonen ikke håndterer formler.
 }
 \examples{

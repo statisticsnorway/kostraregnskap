@@ -133,7 +133,7 @@ Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE
 \item{returnFormelData}{Ved TRUE returneres spesielt datasett med informasjon om formelberegninger (denne parameteren vil bli tatt bort og erstattet av nye output koder som kan brukes)}
 
 \item{smartB}{Ved TRUE (default) og ved valg av ett regnskapsomfang velges en metode som sparer tid og minne.
- Istedenfor å plukke ut regnskapsomfang til slutt gjøres kun de beregninger som trengs.
+Istedenfor å plukke ut regnskapsomfang til slutt gjøres kun de beregninger som trengs.
 Spesielt ved valg av regnskapsomfang B kan data_saer og/eller artshierarki_nettinger sløyfes.}
 
 \item{fixRegionkode}{Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)}

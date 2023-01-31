@@ -16,15 +16,15 @@ flatt_hierarki(
 \arguments{
 \item{hierarki}{hierarki}
 
-\item{copy_hierarki}{Ekstra hierarki som skal brukes når `hierarki` er et nettinghierarki som skal utvides basert på from-koden `"COPY"`.}
+\item{copy_hierarki}{Ekstra hierarki som skal brukes når \code{hierarki} er et nettinghierarki som skal utvides basert på from-koden \code{"COPY"}.}
 
-\item{periode}{Ved flere perioder i `hierarki`, må en periode velges.}
+\item{periode}{Ved flere perioder i \code{hierarki}, må en periode velges.}
 
-\item{fix}{Ved `TRUE` (default): Sørger for blanke i starten/slutten fjernes og at koder som er tall får 3 plasser og ledende nuller (gir warning ved endring av input).}
+\item{fix}{Ved \code{TRUE} (default): Sørger for blanke i starten/slutten fjernes og at koder som er tall får 3 plasser og ledende nuller (gir warning ved endring av input).}
 
-\item{flatt}{Hvorvidt flatt hierarki skal returneres. Ved `FALSE` returneres resultat etter `fix` og bruk av `copy_hierarki`.}
+\item{flatt}{Hvorvidt flatt hierarki skal returneres. Ved \code{FALSE} returneres resultat etter \code{fix} og bruk av \code{copy_hierarki}.}
 
-\item{g}{Flatt hierarki begrenses til `abs(sign)>g`.}
+\item{g}{Flatt hierarki begrenses til \code{abs(sign)>g}.}
 }
 \value{
 Et (flatt) hierarki
