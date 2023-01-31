@@ -4,8 +4,8 @@ context("BalanseRegnskap")
 
 
 test_that("BalanseRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.call(... fungerer", {
-  a = KostraData("balanseRegnskapDataPen")
-  b = KostraData("balanseRegnskapData")
+  a = kr_data("balanseRegnskapDataPen")
+  b = kr_data("balanseRegnskapData")
 
 
   co <- capture.output({  # unngår ustkrift
@@ -56,7 +56,7 @@ test_that("BalanseRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.
 
 
 test_that("BalanseRegnskap - beregningstester", {
-  a=KostraData("balanseRegnskapDataPen")
+  a=kr_data("balanseRegnskapDataPen")
   a$data$periode[a$data$region == "2021"] = "2021"
   ak2 = a$kapittelhierarki
   ak2$periode = "2021"
@@ -135,7 +135,7 @@ test_that("BalanseRegnskap - beregningstester", {
     }
   }
 
-  expect_equal(anyNA(Match(frameBI[, names(z)],Kostra:::CharacterReCodeRegnskapsomfang(z))),FALSE)
+  expect_equal(anyNA(Match(frameBI[, names(z)],kostraregnskap:::CharacterReCodeRegnskapsomfang(z))),FALSE)
   expect_equivalent(frameBI[, names(z)],frameBH[, names(z)])
   expect_equal(frameBI$belop,frameBI$belop2)
 

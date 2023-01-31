@@ -3,7 +3,7 @@ context("KostraRegnskap")
 #options(stringsAsFactors = FALSE)
 
 test_that("KostraRegnskap - beregningstester", {
-  a=KostraData("kostraRegnskapDataPen")
+  a=kr_data("kostraRegnskapDataPen")
 
   co <- capture.output({
     z <- suppressWarnings(  # unngår warning
@@ -136,8 +136,8 @@ test_that("KostraRegnskap - beregningstester", {
 
 
 test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.call(... fungerer", {
-  a=KostraData("kostraRegnskapDataPen")
-  b=KostraData("kostraRegnskapData")
+  a=kr_data("kostraRegnskapDataPen")
+  b=kr_data("kostraRegnskapData")
 
   co <- capture.output({  # unngår ustkrift
   zVanlig <-  KostraRegnskap(a$data, a$funksjonshierarki, a$artshierarki, a$data_saer, a$artshierarki_nettinger,a$artshierarki_nettinger_kasse,
@@ -185,8 +185,8 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
 
 
 test_that("KostraRegnskap - gammel rutine og test av ulike HierarchyCompute varianter", {
-  a=KostraData("kostraRegnskapDataPen")
-  b=KostraData("kostraRegnskapData")
+  a=kr_data("kostraRegnskapDataPen")
+  b=kr_data("kostraRegnskapData")
 
   co1 <- capture.output({
     z1 <-  suppressWarnings(KostraRegnskap(a$data, a$funksjonshierarki, a$artshierarki, a$data_saer,
