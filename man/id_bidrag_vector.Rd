@@ -7,13 +7,7 @@
 \usage{
 id_bidrag_vector(sign, ind, ind_matrix, data, fun_id_bidrag = id_bidrag)
 
-belop_vector(
-  sign,
-  ind,
-  ind_matrix,
-  data,
-  fun_id_bidrag = function(ind, sign, data) sum(sign[ind > 0] * data[["belop"]][ind])
-)
+belop_vector(..., fun_id_bidrag = fun_belop)
 }
 \arguments{
 \item{sign}{Faktor data skal multipliseres med. Samme lengde som \code{ind} nedenfor}

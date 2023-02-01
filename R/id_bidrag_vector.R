@@ -51,9 +51,8 @@ id_bidrag_vector <- function(sign, ind, ind_matrix, data, fun_id_bidrag = id_bid
 
 #' @rdname id_bidrag_vector
 #' @export
-belop_vector <- function(sign, ind, ind_matrix, data, fun_id_bidrag = function(ind, sign, data) sum(sign[ind > 0] * data[["belop"]][ind])) {
-  indm <- ind_matrix[ind, , drop = FALSE]
-  apply(indm, 2, fun_id_bidrag, sign, data)
+belop_vector <- function(..., fun_id_bidrag = fun_belop) {
+  id_bidrag_vector(..., fun_id_bidrag = fun_id_bidrag)
 }
 
   

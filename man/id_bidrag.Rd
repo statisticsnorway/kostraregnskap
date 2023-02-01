@@ -2,9 +2,12 @@
 % Please edit documentation in R/id_bidrag.R
 \name{id_bidrag}
 \alias{id_bidrag}
+\alias{fun_belop}
 \title{Tekststreng som angir bidrag til \code{sum(sign*belop)}}
 \usage{
 id_bidrag(ind, sign, data, id = "id", belop = "belop")
+
+fun_belop(ind, sign, data, id = "id", belop = "belop")
 }
 \arguments{
 \item{ind}{Radnummer i data}
@@ -24,6 +27,7 @@ En tekststreng. Dvs.lengde-1-character-variabel.
 Mer presist: Bidrag til \code{sum(sign[ind > 0] * data[["belop"]][ind])},
 der \code{ind} er vektor med radnummer i data og
 der  \code{sign} har samme lengde som \code{ind}.
+Funksjonen som gir det numeriske resultatbeløpet er med (\code{fun_belop}).
 }
 \examples{
 # Genererer input
@@ -50,6 +54,9 @@ sign2 <- c(1, -1, -1, -3, 2)
 
 # Summen beregnes generelt slik
 sum(sign2[ind2 > 0] * df[["belop"]][ind2])
+
+# Samme med funksjonen fun_belop 
+fun_belop(ind2, sign2, df)
 
 # 0-indekser ignoreres av id_bidrag
 id_bidrag(ind2, sign2, df)

@@ -5,7 +5,7 @@
 #' Mer presist: Bidrag til `sum(sign[ind > 0] * data[["belop"]][ind])`,
 #' der `ind` er vektor med radnummer i data og 
 #' der  `sign` har samme lengde som `ind`. 
-#' 
+#' Funksjonen som gir det numeriske resultatbeløpet er med (`fun_belop`).  
 #'
 #' @param ind Radnummer i data   
 #' @param sign Faktor data skal multipliseres med. Samme lengde som `ind`.
@@ -42,6 +42,9 @@
 #' # Summen beregnes generelt slik
 #' sum(sign2[ind2 > 0] * df[["belop"]][ind2])
 #' 
+#' # Samme med funksjonen fun_belop 
+#' fun_belop(ind2, sign2, df)
+#' 
 #' # 0-indekser ignoreres av id_bidrag
 #' id_bidrag(ind2, sign2, df)
 id_bidrag <- function(ind, sign, data, id = "id", belop = "belop") {
@@ -52,3 +55,15 @@ id_bidrag <- function(ind, sign, data, id = "id", belop = "belop") {
                      sign[ind > 0], "', 'belop': ", 
                      data[[belop]][ind], "}", collapse = ", "), "]")
 }
+
+
+#' @rdname id_bidrag
+#' @export
+fun_belop <- function(ind, sign, data, id = "id", belop = "belop") {
+  sum(sign[ind > 0] * data[[belop]][ind])
+}
+
+
+
+
+
