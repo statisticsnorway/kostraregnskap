@@ -19,6 +19,8 @@ belop_vector(..., fun_id_bidrag = fun_belop)
 \item{data}{\code{data}-parameter til \code{id_bidrag}}
 
 \item{fun_id_bidrag}{Funksjonen \code{id_bidrag}. Kan endres.}
+
+\item{...}{Parametere som videresendes}
 }
 \value{
 Vektor med multippel \code{id_bidrag}-output

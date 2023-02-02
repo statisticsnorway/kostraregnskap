@@ -9,6 +9,7 @@
 #' @param ind_matrix Matrise slik at hver kolonne i `ind_matrix[ind, ]` kan brukes som `ind`-parameter til `id_bidrag` sammen med `sign`
 #' @param data `data`-parameter til `id_bidrag`
 #' @param fun_id_bidrag Funksjonen `id_bidrag`. Kan endres. 
+#' @param ... Parametere som videresendes  
 #'
 #' @return Vektor med multippel `id_bidrag`-output
 #' @export
