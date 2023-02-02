@@ -57,21 +57,16 @@
 id_bidrag_matrix <- function(sign_matrix, ind_matrix, data, fun_id_bidrag = id_bidrag) {
   ind_matrix <- as.matrix(ind_matrix)
   df_seq_len <- data.frame(ind = seq_len(nrow(ind_matrix)))
-  a <- dummy_aggregate(data = df_seq_len, x = sign_matrix, vars = c(ibv = "ind"), 
-                       fun = c(ibv = function(..., fun_vector_data, fun_id_bidrag)
-                         id_bidrag_vector(..., data = fun_vector_data, fun_id_bidrag = fun_id_bidrag)),
-                  ind_matrix = as.matrix(ind_matrix), fun_vector_data = data, 
-                  fun_id_bidrag = fun_id_bidrag, dummy = FALSE, dots2dots = TRUE, 
-                  forward_dots = TRUE, do_unmatrix = FALSE)
-  row_names_a <- rownames(a)
-  a <- a[[1]]
-  if (!is.null(row_names_a)) {
-    rownames(a) <- row_names_a
-  }
-  colnames(a) <- sub("ind_ibv.", "", colnames(a))
-  if (all(colnames(a) == "")) {
-    colnames(a) <- NULL
-  }
+  a <- as.matrix(dummy_aggregate(data = df_seq_len, x = sign_matrix, 
+          vars = c(ibv = "ind"), 
+          fun = c(ibv = function(..., fun_vector_data, fun_id_bidrag)
+                            id_bidrag_vector(..., data = fun_vector_data, 
+          fun_id_bidrag = fun_id_bidrag)),
+          ind_matrix = as.matrix(ind_matrix), fun_vector_data = data, 
+          fun_id_bidrag = fun_id_bidrag, dummy = FALSE, dots2dots = TRUE, 
+          forward_dots = TRUE, do_unmatrix = FALSE, keep_names = FALSE)[[1]])
+  colnames(a) <- colnames(ind_matrix)
+  rownames(a) <- colnames(sign_matrix)
   a
 }
 
