@@ -109,7 +109,9 @@ Ved "fire" blir output et datasett med fire beløpskolonner: kasse, særbedrift,
 Variantene med Factor gir outputdata med factor istedenfor character.
 Ved "hierarkier" returneres utflatede hierarkier.
 Sign for nettinghierarkiet er i kolonnen netting. Dette hierarkiet er omskrevet til å ta vanlige data som input.
-Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).}
+Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).
+Varianten \code{"beredt"} er ny (2023) den betyr at funksjonen bare gjøre forberedelsene før selve beregningene.
+Denne er det ikke mulig å kjøre via \code{KostraRegnskap} med flere perioder i input.}
 
 \item{stjernetabell}{tabell med *  og ? som definerer koder som skal med i output}
 

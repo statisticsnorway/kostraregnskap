@@ -186,6 +186,8 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #'              Ved "hierarkier" returneres utflatede hierarkier.
 #'              Sign for nettinghierarkiet er i kolonnen netting. Dette hierarkiet er omskrevet til å ta vanlige data som input.
 #'              Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).
+#'              Varianten `"beredt"` er ny (2023) den betyr at funksjonen bare gjøre forberedelsene før selve beregningene.  
+#'              Denne er det ikke mulig å kjøre via `KostraRegnskap` med flere perioder i input. 
 #' @param funksjoner funksjoner som skal med i output. Man kan også bruke  *, ?, ! og – tilsvarende som for regioner (se nedenfor).
 #' @param arter arter som skal med i output. Man kan også bruke  *, ?, ! og – tilsvarende som for regioner (se nedenfor).
 #' @param kontoklasser kontoklasser som skal med i output. Det er mulig å bruke * istedenfor NULL til å velge alle kontoklosser.
@@ -373,6 +375,14 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
   #  Utvikling av beregningstester var noe som ble gjort senere. Hvordan disse skulle være var også i en prosess i
   #  iterasjon med fag. At beregningstestene kan håndtere formler gjør dette ekstra avansert. Det var behov for ny kode
   #  inni hovedfunksjonen for å ta ut akkurat det som var ønskelig.
+  
+  if(output == "beredt"){
+    return_beredt = TRUE
+    output = "matrixComponents" # Nesten samme som "matrixComponents", men stopper tidligere 
+  } else {
+    return_beredt = FALSE
+  }
+  
 
   AddLeadingZeros <-  function(codes, ...){
     if (!is.character(codes)) {
@@ -1063,8 +1073,9 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     if(isNullSum==2)
       rm(storkombinasjoner) # trengs ikke mer
     else{
-      if(useMatrixToDataFrame)
+      if(useMatrixToDataFrame & !return_beredt){
         storkombinasjoner = DataFrameToMatrix(storkombinasjoner)
+      }
     }
 
   }
@@ -1586,9 +1597,44 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
   if(returnMatrixComponents|beregningInput){
 
-
-    if(!onlyB)
+    if(!onlyB){
       rowsInputArt = kombinasjoner$art %in% unique(c(unique(data$art),unique(data_saer$art)))
+    } else {
+      rowsInputArt = NULL
+    }
+    
+    if(return_beredt){
+      if(!isnk){
+        arts41 = NULL
+      }
+      if (!is.null(regnskapsomfanger)) {
+        if (regnskapsomfanger == "A") {
+          regnskapsomfang <- "A"
+        }
+        if (regnskapsomfanger == "B") {
+          regnskapsomfang <- BC
+        }
+        
+      } else {
+        regnskapsomfang <- c("A", BC)
+      }
+      return((list(data = data,
+                   data_saer = data_saer,
+                   funksjonshierarki = funksjonshierarki,
+                   artshierarki = artshierarki,
+                   arts32 = arts32,
+                   arts41 = arts41,
+                   regioner = regioner,
+                   kombinasjoner = kombinasjoner,
+                   storkombinasjoner = storkombinasjoner,
+                   storkOrder = storkOrder,
+                   formler =formler,
+                   rowsInputArt = rowsInputArt,
+                   periode=periode,
+                   regnskapsomfang = regnskapsomfang,
+                   integerInOutput = integerInOutput
+      )))
+    }
 
 
     #a1pluss2  <- KostraRegnskap1(data_saer,funksjonshierarki,artsDiff,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents",colNotInDataWarning=FALSE,
