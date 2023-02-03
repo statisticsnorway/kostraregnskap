@@ -366,7 +366,8 @@ FormelKorreksjoner = function(formler,outputdata ,inputdata, funksjonshierarki, 
     wW = KostraRegnskap(inputdata, funksjonshierarki, artshierarki, inputdata_saer, artshierarki_nettinger, artshierarki_nettinger_kasse,
                       funksjoner = funksjonCodes,
                       arter = artCodes ,
-                      regioner = regionCodes, output = outp,  printData = FALSE, autoNetting = FALSE, lag0300 = FALSE, fixRegionkode = FALSE, fixArtkode = FALSE, fixFunksjonkode = FALSE)
+                      regioner = regionCodes, output = outp,  printData = FALSE, autoNetting = FALSE, lag0300 = FALSE, fixRegionkode = FALSE, fixArtkode = FALSE, fixFunksjonkode = FALSE,
+                      useC = "C" %in% outputdata$regnskapsomfang)
 
 
 

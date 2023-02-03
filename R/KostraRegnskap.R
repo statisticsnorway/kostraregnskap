@@ -205,6 +205,8 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #' @param fixFunksjonkode Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at funksjonskoder som er tall får 3 plasser og ledende nuller (gir warning ved endring av input)
 #' @param autoFormel Ved TRUE (default) kan formlene avhenge av hverandre. Ved TRUE kan formlene avhenge av hverandre.
 #'                   Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.
+#' @param useC  Ved TRUE: `"C"` istedenfor `"B"` i output. 
+#'              Default er `FALSE` med mindre `C` er med i inputparameter regnskapsomfang.
 #'
 #' @return En data frame
 #' @export
@@ -347,7 +349,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                           fixRegionkode = TRUE,
                           fixArtkode = TRUE,
                           fixFunksjonkode = TRUE,
-                          autoFormel = TRUE
+                          autoFormel = TRUE,
+                          useC = any(c(grepl("C", regnskapsomfang)))
 ){
   #  Denne koden er resultat av utvikling over tid i en prosess der hva som skulle gjøres ble bestemt i iterasjon med
   #  fagseksjon.
@@ -399,7 +402,15 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     else
       print(as.matrix(formler,rownames=TRUE),quote=FALSE) # Printer alle og dessuten på en penere måte
   }
-
+  
+  if (useC) {
+    if (!is.null(regnskapsomfang)) {
+      regnskapsomfang <- gsub("C", "B", regnskapsomfang)
+    }
+    BC <- "C"
+  } else {
+    BC <- "B"
+  }
 
   warningTextRegionskoder = "Regionskoder endret"
   warningTextArtskoder = "Artskoder endret"
@@ -1800,12 +1811,12 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
       }
       if(regnskapsomfanger=="B"){
         z=data.frame(a=as.vector(as.vector(as.matrix(mat1))),stringsAsFactors=stringsAsFactors)
-        regnskapsomfang =  data.frame(a=rep(c("B"), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
+        regnskapsomfang =  data.frame(a=rep(c(BC), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
       }
 
     } else{
       z=data.frame(a=as.vector(c(as.vector(as.matrix(matDiff+mat1)),as.vector(as.matrix(mat1)))),stringsAsFactors=stringsAsFactors)
-      regnskapsomfang =  data.frame(a=rep(c("A","B"), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
+      regnskapsomfang =  data.frame(a=rep(c("A",BC), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
     }
     names(z) = valueVar
 

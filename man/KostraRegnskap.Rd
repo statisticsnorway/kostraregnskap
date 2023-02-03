@@ -75,7 +75,8 @@ KostraRegnskapEnPeriode(
   fixRegionkode = TRUE,
   fixArtkode = TRUE,
   fixFunksjonkode = TRUE,
-  autoFormel = TRUE
+  autoFormel = TRUE,
+  useC = any(c(grepl("C", regnskapsomfang)))
 )
 }
 \arguments{
@@ -144,6 +145,9 @@ Spesielt ved valg av regnskapsomfang B kan data_saer og/eller artshierarki_netti
 
 \item{autoFormel}{Ved TRUE (default) kan formlene avhenge av hverandre. Ved TRUE kan formlene avhenge av hverandre.
 Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.}
+
+\item{useC}{Ved TRUE: \code{"C"} istedenfor \code{"B"} i output.
+Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.}
 }
 \value{
 En data frame
