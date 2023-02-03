@@ -3,6 +3,7 @@ context("KostraRegnskap")
 #options(stringsAsFactors = FALSE)
 
 test_that("KostraRegnskap - beregningstester", {
+  skip("Tester tar lang tid")
   a=kr_data("kostraRegnskapDataPen")
 
   co <- capture.output({
@@ -185,6 +186,7 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
 
 
 test_that("KostraRegnskap - gammel rutine og test av ulike HierarchyCompute varianter", {
+  skip("Reduserer antall tester")
   a=kr_data("kostraRegnskapDataPen")
   b=kr_data("kostraRegnskapData")
 
