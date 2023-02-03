@@ -2210,7 +2210,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 #' @export
 #' @keywords internal
 #'
-KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NULL,regioner=NULL,inputInOutput=NULL, ...){
+KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NULL,regioner=NULL,inputInOutput=NULL, valueVar = "belop", ...){
 
   periode = unique(c(as.character(data$periode),
                      as.character(funksjonshierarki$periode),
@@ -2230,7 +2230,7 @@ KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NUL
 
   HierarchyCompute(data=data,
                    hierarchies=hierarkier,
-                   valueVar = "belop",
+                   valueVar = valueVar,
                    rowSelect = kombinasjoner,
                    colSelect = regioner,
                    autoLevel = TRUE,
