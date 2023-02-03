@@ -103,7 +103,7 @@ KostraRegnskap = function(data,funksjonshierarki,artshierarki,data_saer=NULL,
       cat("==============    periode = ",perioder[i],"    ================\n")
       cat("==============================================================\n")
     }
-    ai =  KostraRegnskapEnPeriode(data = DataPeriode(data,perioder[i]),
+    ai =  kostra_regnskap(data = DataPeriode(data,perioder[i]), #KostraRegnskapEnPeriode(data = DataPeriode(data,perioder[i]),
                    funksjonshierarki = DataPeriode(funksjonshierarki,perioder[i]),
                    artshierarki = DataPeriode(artshierarki,perioder[i]),
                    data_saer = DataPeriode(data_saer,perioder[i]),
@@ -1122,6 +1122,9 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
 
   if(isNullSum==2){
+    if(return_beredt){
+      stop("Ikke implementert ved return_beredt")
+    }
 
     if(output == "hierarkier"){
 
