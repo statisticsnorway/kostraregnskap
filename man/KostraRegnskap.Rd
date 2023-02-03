@@ -76,7 +76,8 @@ KostraRegnskapEnPeriode(
   fixArtkode = TRUE,
   fixFunksjonkode = TRUE,
   autoFormel = TRUE,
-  useC = any(c(grepl("C", regnskapsomfang)))
+  useC = any(c(grepl("C", regnskapsomfang))),
+  handleDuplicated = "sum"
 )
 }
 \arguments{
@@ -150,6 +151,8 @@ Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.}
 
 \item{useC}{Ved TRUE: \code{"C"} istedenfor \code{"B"} i output.
 Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.}
+
+\item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.}
 }
 \value{
 En data frame

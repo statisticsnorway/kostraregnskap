@@ -240,7 +240,8 @@ FormelKorreksjonerDataFrameOutput = function(a,belop,formler){
 
 
 FormelKorreksjoner = function(formler,outputdata ,inputdata, funksjonshierarki, artshierarki, inputdata_saer,
-                              artshierarki_nettinger, artshierarki_nettinger_kasse, regioner ,frameOutput=FALSE, rader0warning=TRUE, printData=TRUE){
+                              artshierarki_nettinger, artshierarki_nettinger_kasse, regioner ,frameOutput=FALSE, rader0warning=TRUE, printData=TRUE,
+                              handleDuplicated){
 
   #>   #b = ExprCrossVar("FG2:AGD12 = FG2:AGD12 - 800:EIENDOMSSKATT_OG__ANDRE_SKATTER")
   #  >   #b = ExprCrossVar("FG2:AGD12 = FG2:AGD12 - 800:EIENDOMSSKATT_OG__ANDRE_SKATTER + 3.14*FGK18:SALGSINNTEKTER")
@@ -367,7 +368,7 @@ FormelKorreksjoner = function(formler,outputdata ,inputdata, funksjonshierarki, 
                       funksjoner = funksjonCodes,
                       arter = artCodes ,
                       regioner = regionCodes, output = outp,  printData = FALSE, autoNetting = FALSE, lag0300 = FALSE, fixRegionkode = FALSE, fixArtkode = FALSE, fixFunksjonkode = FALSE,
-                      useC = "C" %in% outputdata$regnskapsomfang)
+                      useC = "C" %in% outputdata$regnskapsomfang, handleDuplicated = handleDuplicated)
 
 
 
