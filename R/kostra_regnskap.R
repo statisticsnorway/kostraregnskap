@@ -140,27 +140,39 @@ formel_korreksjon <- function(a, af, fm) {
 
 
 regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, valueVar = "belop", kombinasjoner,  storkOrder = NULL, 
-                               storkombinasjoner = NULL,  colVar="region", integerInOutput){
+                               storkombinasjoner = NULL,  colVar="region", integerInOutput, bidragA, bidragB){
   regnskapsomfanger <- regnskapsomfang
   stringsAsFactors = FALSE
   forceStringsAsFactors = FALSE
   if(length(regnskapsomfanger) == 1){
     if(regnskapsomfanger=="A"){
-      z=data.frame(a=as.vector(as.vector(as.matrix(matA))),stringsAsFactors=stringsAsFactors)
+      if(is.null(bidragA)){
+        z=data.frame(a=as.vector(as.vector(as.matrix(matA))))
+      } else {
+        z=data.frame(a=as.vector(as.vector(as.matrix(matA))), bidrag=as.vector(as.vector(as.matrix(bidragA))))
+      }
       regnskapsomfang =  data.frame(a=rep(regnskapsomfanger, times = 1, each = cumprod(dim(matA))[2]  ),stringsAsFactors=stringsAsFactors)
     } else {
-      z=data.frame(a=as.vector(as.vector(as.matrix(matB))),stringsAsFactors=stringsAsFactors)
+      if(is.null(bidragA)){
+        z=data.frame(a=as.vector(as.vector(as.matrix(matB))))
+      } else {
+        z=data.frame(a=as.vector(as.vector(as.matrix(matB))),  bidrag=as.vector(as.vector(as.matrix(bidragB))))
+      }
       regnskapsomfang =  data.frame(a=rep(regnskapsomfanger, times = 1, each = cumprod(dim(matB))[2]  ),stringsAsFactors=stringsAsFactors)
     }
     
   } else{
     if(length(regnskapsomfanger) != 2){
       stop("galt antall regnskapsomfan")
+    } 
+    if(is.null(bidragA)){
+      z=data.frame(a=as.vector(c(as.vector(as.matrix(matA)),as.vector(as.matrix(matB)))))
+    } else {
+      z=data.frame(a=as.vector(c(as.vector(as.matrix(matA)),as.vector(as.matrix(matB)))), bidrag=as.vector(c(as.vector(as.matrix(bidragA)),as.vector(as.matrix(bidragB)))))
     }
-    z=data.frame(a=as.vector(c(as.vector(as.matrix(matA)),as.vector(as.matrix(matB)))),stringsAsFactors=stringsAsFactors)
     regnskapsomfang =  data.frame(a=rep(regnskapsomfanger, times = 1, each = cumprod(dim(matA))[2]  ),stringsAsFactors=stringsAsFactors)
   }
-  names(z) = valueVar
+  names(z)[1] = valueVar
   names(regnskapsomfang) = "regnskapsomfang"
   rownames(regnskapsomfang) = NULL
   
@@ -186,6 +198,11 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
   rownames(kombinasjoner) = NULL
   rownames(z) = NULL
   
+  if (is.null(periode)) {
+    # cbind not working with NULL
+    print("hei")
+    periode <- matrix(0, nrow(regnskapsomfang), 0)
+  }
   
   if(is.null(storkOrder)){
     w=cbind(periode=periode,regnskapsomfang,colDataSelected,kombinasjoner,z)
@@ -263,13 +280,58 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #' @return output
 #' @export
 #'
-kostra_regnskap <- function(..., output = "en") {
+kostra_regnskap <- function(data,
+                            funksjonshierarki,
+                            artshierarki,
+                            data_saer=NULL,
+                            artshierarki_nettinger=NULL,
+                            artshierarki_nettinger_kasse=NULL,
+                            ..., 
+                            output = "en", 
+                            bidrag = FALSE) {
 
-  if(output != "en"){
-    return(KostraRegnskapEnPeriode(..., output = output))
+  
+  periode <- unique(c(as.character(data$periode),
+                      as.character(funksjonshierarki$periode),
+                      as.character(artshierarki$periode),
+                      as.character(data_saer$periode),
+                      as.character(artshierarki_nettinger_kasse$periode),
+                      as.character(artshierarki_nettinger$periode)))
+  
+  if (length(periode) > 1) {
+    stop(paste("periode er ikke unik:", paste(periode, collapse = ", ")))
   }
   
-  b <- beredt(...)
+  
+  if (output == "en") {
+    output <- "beredt"
+  }
+  
+  
+  b <- KostraRegnskapEnPeriode(data = data,
+                               funksjonshierarki = funksjonshierarki,
+                               artshierarki = artshierarki,
+                               data_saer = data_saer,
+                               artshierarki_nettinger = artshierarki_nettinger,
+                               artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                               ..., output = output)
+  
+  if (output != "beredt") {
+    return(b)
+  }
+  
+  if(is.na(b$periode)){
+    b$periode <- NULL
+  }
+  
+  
+  if(bidrag){
+    df = rbind(b$data["belop"], b$data_saer["belop"])
+    df$id = paste0("id", seq_len(nrow(df)))
+    b$data$belop = seq_len(nrow(b$data))
+    b$data_saer$belop = nrow(b$data) + seq_len(nrow(b$data_saer))
+  }
+  
   
   my_call <- as.call(c(get_a1234, b))
   
@@ -288,24 +350,55 @@ kostra_regnskap <- function(..., output = "en") {
     qq <- c(q[1], q2)
   }
   
-  
-  
-  if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
-    matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
+  if(bidrag){
+    if ("A" %in% b$regnskapsomfang) {
+      qq[[2]]$dataDummyHierarchy = cbind(qq[[2]]$dataDummyHierarchy, qq[[3]]$dataDummyHierarchy)
+      qq[[2]]$valueMatrix = as.matrix(rbind(qq[[2]]$valueMatrix, qq[[3]]$valueMatrix))
+      qq[3] <- NULL
+      value_matrix_A <- qq[[2]]$valueMatrix
+      value_matrix_A[qq[[2]]$valueMatrix > 0] <- df[["belop"]][qq[[2]]$valueMatrix]
+      matA <- qq[[2]]$dataDummyHierarchy %*% value_matrix_A
+      cat(" [bidragA..")
+      flush.console()
+      bidragA <-  id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy),  qq[[2]]$valueMatrix, df) 
+      cat(".]")
+      flush.console()
+    } 
+    if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
+      qq[[1]]$valueMatrix <- as.matrix(qq[[1]]$valueMatrix)
+      value_matrix_B <- qq[[1]]$valueMatrix
+      value_matrix_B[qq[[1]]$valueMatrix > 0] <- df[["belop"]][qq[[1]]$valueMatrix]
+      matB <- qq[[1]]$dataDummyHierarchy %*% value_matrix_B
+      cat(" [bidragB..")
+      flush.console()
+      bidragB <-  id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df) 
+      cat(".]")
+      flush.console()
+    }
   } else {
-    matB <- NULL
+    if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
+      matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
+    } else {
+      matB <- NULL
+    }
+    
+    
+    if ("A" %in% b$regnskapsomfang) {
+      matA <- qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix
+    } else {
+      matA <- NULL
+    }
+    
+    bidragA <- NULL
+    bidragB <- NULL
   }
   
   
-  if ("A" %in% b$regnskapsomfang) {
-    matA <- qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix
-  } else {
-    matA <- NULL
-  }
-  
+  #bidragA <- NULL     # For test
+  #bidragB <- NULL
   
   k=regnskap_from_matrix(matA, matB, periode = b$periode, regnskapsomfang = b$regnskapsomfang, valueVar = "belop", kombinasjoner = b$kombinasjoner, storkOrder = b$storkOrder, storkombinasjoner = b$storkombinasjoner,
-                     integerInOutput = b$integerInOutput)
+                     integerInOutput = b$integerInOutput, bidragA = bidragA, bidragB = bidragB)
   
   
 }

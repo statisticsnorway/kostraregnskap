@@ -4,7 +4,17 @@
 \alias{kostra_regnskap}
 \title{kostra_regnskap}
 \usage{
-kostra_regnskap(..., output = "en")
+kostra_regnskap(
+  data,
+  funksjonshierarki,
+  artshierarki,
+  data_saer = NULL,
+  artshierarki_nettinger = NULL,
+  artshierarki_nettinger_kasse = NULL,
+  ...,
+  output = "en",
+  bidrag = FALSE
+)
 }
 \arguments{
 \item{...}{dots}
