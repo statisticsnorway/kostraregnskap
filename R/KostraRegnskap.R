@@ -688,8 +688,10 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                      as.character(artshierarki_nettinger_kasse$periode),
                      as.character(artshierarki_nettinger$periode)))
 
-  if(length(periode) == 0)
-    stop("periode finnes ikke i input")
+  if(length(periode) == 0){
+    # stop("periode finnes ikke i input")
+    periode <- NA_character_
+  }
   if(length(periode) > 1)
     stop(paste("periode er ikke unik:",paste(periode,collapse=", ")))
 
@@ -2218,6 +2220,11 @@ KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NUL
   periode = unique(c(as.character(data$periode),
                      as.character(funksjonshierarki$periode),
                      as.character(artshierarki$periode)))
+  
+  if (length(periode) == 0) {
+    periode <- NA_character_
+  }
+  
   if(length(periode) != 1)
     stop("Ikke unik periode")
 
