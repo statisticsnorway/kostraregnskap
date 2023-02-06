@@ -288,7 +288,7 @@ kostra_regnskap <- function(data,
                             artshierarki_nettinger_kasse=NULL,
                             ..., 
                             output = "en", 
-                            bidrag = FALSE) {
+                            bidrag = TRUE) {
 
   
   periode <- unique(c(as.character(data$periode),
@@ -319,51 +319,73 @@ kostra_regnskap <- function(data,
   if (output != "beredt") {
     return(b)
   }
-  
-  if(is.na(b$periode)){
+  if (is.na(b$periode)) {
     b$periode <- NULL
   }
   
-  
-  if(bidrag){
-    df = rbind(b$data["belop"], b$data_saer["belop"])
-    df$id = paste0("id", seq_len(nrow(df)))
-    b$data$belop = seq_len(nrow(b$data))
-    b$data_saer$belop = nrow(b$data) + seq_len(nrow(b$data_saer))
+  if (bidrag) {
+    df <- rbind(b$data["belop"], b$data_saer["belop"])
+    df$id <- paste0("id", seq_len(nrow(df)))
+    b$data$belop <- seq_len(nrow(b$data))
+    b$data_saer$belop <- nrow(b$data) + seq_len(nrow(b$data_saer))
   }
   
-  
+  # Triks for å kalle get_a1234 uten å skrive alle parametere 
   my_call <- as.call(c(get_a1234, b))
-  
   q <- eval(my_call)
   
-  q2 <- list(sum_netting(q[c(1, 4)]), sum_netting(q[c(2, 3)]))
-  
   if (!is.null(b$formler)) {
-    fm <- kostraregnskap:::FormelMatrise(b$formler$formel)
+    fm <- FormelMatrise(b$formler$formel)
     my_call$kombinasjoner <- fm$codesRight
     qf <- eval(my_call)
-    q2f <- list(sum_netting(qf[c(1, 4)]), sum_netting(qf[c(2, 3)]))
-    
-    qq <- formel_korreksjon(c(q[1], q2), c(qf[1], q2f), fm)
-  } else {
-    qq <- c(q[1], q2)
   }
   
-  if(bidrag){
+  if (!bidrag) {
+    if (!is.null(b$formler)) {
+      qq <- formel_korreksjon(q, qf, fm)
+    } else {
+      qq <- q
+    }
+    
+    if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
+      matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
+    } else {
+      matB <- NULL
+    }
+    
     if ("A" %in% b$regnskapsomfang) {
-      qq[[2]]$dataDummyHierarchy = cbind(qq[[2]]$dataDummyHierarchy, qq[[3]]$dataDummyHierarchy)
-      qq[[2]]$valueMatrix = as.matrix(rbind(qq[[2]]$valueMatrix, qq[[3]]$valueMatrix))
+      matA <- (qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix + 
+               qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + 
+               qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix + 
+               qq[[4]]$dataDummyHierarchy %*% qq[[4]]$valueMatrix)
+    } else {
+      matA <- NULL
+    }
+    
+    bidragA <- NULL
+    bidragB <- NULL
+    
+  } else {
+    q2 <- list(sum_netting(q[c(1, 4)]), sum_netting(q[c(2, 3)]))
+    if (!is.null(b$formler)) {
+      q2f <- list(sum_netting(qf[c(1, 4)]), sum_netting(qf[c(2, 3)]))
+      qq <- formel_korreksjon(c(q[1], q2), c(qf[1], q2f), fm)
+    } else {
+      qq <- c(q[1], q2)
+    }
+    if ("A" %in% b$regnskapsomfang) {
+      qq[[2]]$dataDummyHierarchy <- cbind(qq[[2]]$dataDummyHierarchy, qq[[3]]$dataDummyHierarchy)
+      qq[[2]]$valueMatrix <- as.matrix(rbind(qq[[2]]$valueMatrix, qq[[3]]$valueMatrix))
       qq[3] <- NULL
       value_matrix_A <- qq[[2]]$valueMatrix
       value_matrix_A[qq[[2]]$valueMatrix > 0] <- df[["belop"]][qq[[2]]$valueMatrix]
       matA <- qq[[2]]$dataDummyHierarchy %*% value_matrix_A
       cat(" [bidragA..")
       flush.console()
-      bidragA <-  id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy),  qq[[2]]$valueMatrix, df) 
+      bidragA <- id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy), qq[[2]]$valueMatrix, df)
       cat(".]")
       flush.console()
-    } 
+    }
     if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
       qq[[1]]$valueMatrix <- as.matrix(qq[[1]]$valueMatrix)
       value_matrix_B <- qq[[1]]$valueMatrix
@@ -371,36 +393,20 @@ kostra_regnskap <- function(data,
       matB <- qq[[1]]$dataDummyHierarchy %*% value_matrix_B
       cat(" [bidragB..")
       flush.console()
-      bidragB <-  id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df) 
+      bidragB <- id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df)
       cat(".]")
       flush.console()
     }
-  } else {
-    if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
-      matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
-    } else {
-      matB <- NULL
-    }
-    
-    
-    if ("A" %in% b$regnskapsomfang) {
-      matA <- qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix
-    } else {
-      matA <- NULL
-    }
-    
-    bidragA <- NULL
-    bidragB <- NULL
   }
   
+  bidragA <- NULL  # For test
+  bidragB <- NULL
   
-  #bidragA <- NULL     # For test
-  #bidragB <- NULL
-  
-  k=regnskap_from_matrix(matA, matB, periode = b$periode, regnskapsomfang = b$regnskapsomfang, valueVar = "belop", kombinasjoner = b$kombinasjoner, storkOrder = b$storkOrder, storkombinasjoner = b$storkombinasjoner,
-                     integerInOutput = b$integerInOutput, bidragA = bidragA, bidragB = bidragB)
-  
-  
+  regnskap_from_matrix(matA, matB, periode = b$periode, regnskapsomfang = b$regnskapsomfang, 
+                       valueVar = "belop", kombinasjoner = b$kombinasjoner, 
+                       storkOrder = b$storkOrder, storkombinasjoner = b$storkombinasjoner,
+                       integerInOutput = b$integerInOutput, 
+                       bidragA = bidragA, bidragB = bidragB)
 }
 
 

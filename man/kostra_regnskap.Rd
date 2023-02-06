@@ -13,7 +13,7 @@ kostra_regnskap(
   artshierarki_nettinger_kasse = NULL,
   ...,
   output = "en",
-  bidrag = FALSE
+  bidrag = TRUE
 )
 }
 \arguments{
