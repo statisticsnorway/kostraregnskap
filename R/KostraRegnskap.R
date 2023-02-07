@@ -120,13 +120,18 @@ KostraRegnskap = function(data,funksjonshierarki,artshierarki,data_saer=NULL,
 }
 
 
-DataPeriode = function(data,periode,okNULL = FALSE){
+DataPeriode = function(data,periode,okNULL = FALSE, rm_periode = FALSE){
   if(is.null(data))
     return(NULL)
   if(okNULL)
     if(is.null(data$periode))
       return(data)
   rows = as.character(data$periode) == periode
+  
+  if(rm_periode){
+    data = data[names(data) != "periode"]
+  }
+  
   if(any(!rows))
     return(data[rows, ,drop=FALSE])
   data
