@@ -13,6 +13,7 @@ kostra_regnskap(
   artshierarki_nettinger_kasse = NULL,
   ...,
   output = "en",
+  fun_id_bidrag = id_bidrag,
   bidrag = TRUE
 )
 }

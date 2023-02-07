@@ -22,3 +22,10 @@ kostra_regnskap_aar <- function(aar = 2015,
   
 }
 
+
+id_bidrag_expression <- function(ind, sign, data) {
+  if (!sum(ind)) {
+    return(0)
+  }
+  paste0("(", sign[ind > 0], ")*(", data[["belop"]][ind], ")", collapse = " + ")
+}

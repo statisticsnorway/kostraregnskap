@@ -287,7 +287,8 @@ kostra_regnskap <- function(data,
                             artshierarki_nettinger=NULL,
                             artshierarki_nettinger_kasse=NULL,
                             ..., 
-                            output = "en", 
+                            output = "en",
+                            fun_id_bidrag = id_bidrag,
                             bidrag = TRUE) {
 
   
@@ -383,7 +384,8 @@ kostra_regnskap <- function(data,
       matA <- qq[[2]]$dataDummyHierarchy %*% value_matrix_A
       cat(" [bidragA..")
       flush.console()
-      bidragA <- id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy), qq[[2]]$valueMatrix, df)
+      bidragA <- id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy), qq[[2]]$valueMatrix, df, 
+                                  fun_id_bidrag = fun_id_bidrag)
       cat(".]")
       flush.console()
     }
@@ -394,7 +396,8 @@ kostra_regnskap <- function(data,
       matB <- qq[[1]]$dataDummyHierarchy %*% value_matrix_B
       cat(" [bidragB..")
       flush.console()
-      bidragB <- id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df)
+      bidragB <- id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df,
+                                  fun_id_bidrag = fun_id_bidrag)
       cat(".]")
       flush.console()
     }
