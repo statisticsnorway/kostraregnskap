@@ -151,6 +151,8 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
                  eval(as.call(c(as.name("KostraRegnskap"),b,
                  list(arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65")),
                  list(funksjoner=c("FG2","FG1"))))))})
+  
+  
 
   expect_equal(zEval, zVanlig)
   expect_equal(sum(zEval$belop),1270849893L)
@@ -164,6 +166,16 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
       eval(as.call(c(as.name("KostraRegnskap"),a,
                      list(perioder="2015")))))})
 
+  co <- capture.output({
+    k_2015 <- kostra_regnskap_aar(bidrag = FALSE)
+  })
+  co <- capture.output({
+    k_2015b <- kostra_regnskap_aar(bidrag = TRUE)
+  })
+  
+  expect_equal(z[-1], k_2015)
+  expect_equal(k_2015b[-7], k_2015)
+  
   expect_equal(sum(z$belop),9419229115)
   expect_equivalent(dim(z), c(357112,7))
   expect_equivalent(names(z), c("periode", "regnskapsomfang", "region", "funksjon", "kontoklasse", "art", "belop"))

@@ -103,7 +103,7 @@ KostraRegnskap = function(data,funksjonshierarki,artshierarki,data_saer=NULL,
       cat("==============    periode = ",perioder[i],"    ================\n")
       cat("==============================================================\n")
     }
-    ai =  kostra_regnskap(data = DataPeriode(data,perioder[i]), #KostraRegnskapEnPeriode(data = DataPeriode(data,perioder[i]),
+    ai =  KostraRegnskapEnPeriode(data = DataPeriode(data,perioder[i]),
                    funksjonshierarki = DataPeriode(funksjonshierarki,perioder[i]),
                    artshierarki = DataPeriode(artshierarki,perioder[i]),
                    data_saer = DataPeriode(data_saer,perioder[i]),

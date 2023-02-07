@@ -27,7 +27,7 @@ beredt = function(...){
 #' @param rowsInputArt Denne ble beregnet som `kombinasjoner$art %in% unique(c(unique(data$art), unique(data_saer$art)))`. 
 #'                     Kan sannsynligvis fjernes som parameter og heller beregnes på nytt.
 #'                     Brukes for å ta bort koder for å hindre fordobling fra både hierarki og nettinghierarki.  
-#' @param handleDuplicated handleDuplicated
+#' @param handleDuplicated Denne bør være `stop` når ved beregning av id-bidrag siden rad-nummer ikke kan summeres.  
 #' @param useMatrixToDataFrame useMatrixToDataFrame 
 #' @param ... Ubrukte parametere 
 #'
@@ -316,6 +316,7 @@ kostra_regnskap <- function(data,
                                artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
                                ..., output = output)
   
+  
   if (output != "beredt") {
     return(b)
   }
@@ -399,8 +400,6 @@ kostra_regnskap <- function(data,
     }
   }
   
-  bidragA <- NULL  # For test
-  bidragB <- NULL
   
   regnskap_from_matrix(matA, matB, periode = b$periode, regnskapsomfang = b$regnskapsomfang, 
                        valueVar = "belop", kombinasjoner = b$kombinasjoner, 

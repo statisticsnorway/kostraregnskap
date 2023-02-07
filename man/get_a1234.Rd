@@ -40,7 +40,7 @@ get_a1234(
 Kan sannsynligvis fjernes som parameter og heller beregnes på nytt.
 Brukes for å ta bort koder for å hindre fordobling fra både hierarki og nettinghierarki.}
 
-\item{handleDuplicated}{handleDuplicated}
+\item{handleDuplicated}{Denne bør være \code{stop} når ved beregning av id-bidrag siden rad-nummer ikke kan summeres.}
 
 \item{useMatrixToDataFrame}{useMatrixToDataFrame}
 
