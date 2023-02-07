@@ -291,7 +291,35 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #'
 #' @return output
 #' @export
-#'
+#' 
+#' @examples 
+#' aar <- 2015  # 2016 kan også velges 
+#' inputdata <- kr_data("data", aar)
+#' funksjonshierarki <- kr_data("funksjonshierarki", aar)
+#' artshierarki <- kr_data("artshierarki", aar)
+#' inputdata_saer <- kr_data("data_saer", aar)
+#' artshierarki_nettinger <- kr_data("artshierarki_nettinger", aar)
+#' artshierarki_nettinger_kasse <- kr_data("artshierarki_nettinger_kasse", aar)
+#' stjerne <- kr_data("stjernetabell", aar)
+#' formler <- kr_data("formler", aar)
+#' 
+#' 
+#' inputdata$UUID <- paste0("ce1f9682-data-data-8000-", 
+#'                           SSBtools::Number(seq_len(nrow(inputdata)), 13))
+#' inputdata_saer$UUID <- paste0("ca3679e0-data-saer-8000-", 
+#'                                SSBtools::Number(seq_len(nrow(inputdata_saer)), 13))
+#' 
+#' z <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+#'                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+#'                      artshierarki_nettinger = artshierarki_nettinger, 
+#'                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+#'                      stjernetabell = stjerne, formler = formler, 
+#'                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+#'                      funksjoner = c("FG2", "FG1"))
+#' z[1:10, 1:7]
+#' z[5, ]
+#' z[7:10, ]
+#' 
 kostra_regnskap <- function(data,
                             funksjonshierarki,
                             artshierarki,
