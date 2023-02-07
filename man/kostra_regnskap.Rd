@@ -12,9 +12,13 @@ kostra_regnskap(
   artshierarki_nettinger = NULL,
   artshierarki_nettinger_kasse = NULL,
   ...,
-  output = "en",
+  output = "standard",
+  bidrag = TRUE,
+  generer_id = TRUE,
+  bidrag_var = "source",
+  id_var = "UUID",
   fun_id_bidrag = id_bidrag,
-  bidrag = TRUE
+  fun_generer_id = uuid_generate_time
 )
 }
 \arguments{

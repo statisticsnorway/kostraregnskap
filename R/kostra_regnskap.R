@@ -139,8 +139,10 @@ formel_korreksjon <- function(a, af, fm) {
 
 
 
-regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, valueVar = "belop", kombinasjoner,  storkOrder = NULL, 
-                               storkombinasjoner = NULL,  colVar="region", integerInOutput, bidragA, bidragB){
+regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, value_var = "belop", kombinasjoner,  storkOrder = NULL, 
+                               storkombinasjoner = NULL,  colVar="region", integerInOutput, bidragA, bidragB, 
+                               bidrag_var = "source", id_var = "UUID", 
+                               fun_generer_id){
   regnskapsomfanger <- regnskapsomfang
   stringsAsFactors = FALSE
   forceStringsAsFactors = FALSE
@@ -172,7 +174,7 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
     }
     regnskapsomfang =  data.frame(a=rep(regnskapsomfanger, times = 1, each = cumprod(dim(matA))[2]  ),stringsAsFactors=stringsAsFactors)
   }
-  names(z)[1] = valueVar
+  names(z) = c(value_var, bidrag_var)[seq_len(ncol(z))]
   names(regnskapsomfang) = "regnskapsomfang"
   rownames(regnskapsomfang) = NULL
   
@@ -205,6 +207,11 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
   }
   
   if(is.null(storkOrder)){
+    if (!is.null(fun_generer_id)) {
+      z <- z[c(1, seq_len(length(z)))]
+      names(z)[2] <- id_var
+      z[[2]] <- fun_generer_id(nrow(z))
+    }
     w=cbind(periode=periode,regnskapsomfang,colDataSelected,kombinasjoner,z)
     return(w)
   } else{
@@ -219,6 +226,11 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
     cat("..")
     flush.console()
     z  = z[storkOrder, ,drop=FALSE]
+    if (!is.null(fun_generer_id)) {
+      z <- z[c(1, seq_len(length(z)))]
+      names(z)[2] <- id_var
+      z[[2]] <- fun_generer_id(nrow(z))
+    }
     
     cat("..")
     flush.console()
@@ -287,9 +299,13 @@ kostra_regnskap <- function(data,
                             artshierarki_nettinger=NULL,
                             artshierarki_nettinger_kasse=NULL,
                             ..., 
-                            output = "en",
+                            output = "standard",
+                            bidrag = TRUE,
+                            generer_id = TRUE,
+                            bidrag_var = "source",
+                            id_var = "UUID",
                             fun_id_bidrag = id_bidrag,
-                            bidrag = TRUE) {
+                            fun_generer_id = uuid_generate_time) {
 
   
   periode <- unique(c(as.character(data$periode),
@@ -303,8 +319,10 @@ kostra_regnskap <- function(data,
     stop(paste("periode er ikke unik:", paste(periode, collapse = ", ")))
   }
   
+  gammel_rutine = !(output %in% "standard")
   
-  if (output == "en") {
+  
+  if (output == "standard") {
     output <- "beredt"
   }
   
@@ -318,7 +336,7 @@ kostra_regnskap <- function(data,
                                ..., output = output)
   
   
-  if (output != "beredt") {
+  if (gammel_rutine) {
     return(b)
   }
   if (is.na(b$periode)) {
@@ -327,7 +345,12 @@ kostra_regnskap <- function(data,
   
   if (bidrag) {
     df <- rbind(b$data["belop"], b$data_saer["belop"])
-    df$id <- paste0("id", seq_len(nrow(df)))
+    if (id_var %in% names(b$data) & id_var %in% names(b$data_saer)) {
+      df$id <- c(b$data[[id_var]], b$data_saer[[id_var]])
+    } else {
+      df$id <- c(paste0("data_row_", seq_len(nrow(b$data))), 
+                 paste0("data_saer_row_", seq_len(nrow(b$data_saer))))
+    }
     b$data$belop <- seq_len(nrow(b$data))
     b$data_saer$belop <- nrow(b$data) + seq_len(nrow(b$data_saer))
   }
@@ -403,12 +426,18 @@ kostra_regnskap <- function(data,
     }
   }
   
+  if (!generer_id) {
+    fun_generer_id <- NULL
+  }
   
   regnskap_from_matrix(matA, matB, periode = b$periode, regnskapsomfang = b$regnskapsomfang, 
-                       valueVar = "belop", kombinasjoner = b$kombinasjoner, 
+                       value_var = "belop", kombinasjoner = b$kombinasjoner, 
                        storkOrder = b$storkOrder, storkombinasjoner = b$storkombinasjoner,
                        integerInOutput = b$integerInOutput, 
-                       bidragA = bidragA, bidragB = bidragB)
+                       bidragA = bidragA, bidragB = bidragB, 
+                       bidrag_var = bidrag_var,
+                       id_var = id_var,
+                       fun_generer_id = fun_generer_id)
 }
 
 
