@@ -202,7 +202,6 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
   
   if (is.null(periode)) {
     # cbind not working with NULL
-    print("hei")
     periode <- matrix(0, nrow(regnskapsomfang), 0)
   }
   
@@ -374,13 +373,23 @@ kostra_regnskap <- function(data,
   if (bidrag) {
     df <- rbind(b$data["belop"], b$data_saer["belop"])
     if (id_var %in% names(b$data) & id_var %in% names(b$data_saer)) {
-      df$id <- c(b$data[[id_var]], b$data_saer[[id_var]])
+      if(!is.null(b$data_saer)){
+        df$id <- c(b$data[[id_var]], b$data_saer[[id_var]]) 
+      } else {
+        df$id <- b$data[[id_var]]
+      }
     } else {
-      df$id <- c(paste0("data_row_", seq_len(nrow(b$data))), 
-                 paste0("data_saer_row_", seq_len(nrow(b$data_saer))))
+      if(!is.null(b$data_saer)){
+        df$id <- c(paste0("data_row_", seq_len(nrow(b$data))), 
+                   paste0("data_saer_row_", seq_len(nrow(b$data_saer)))) 
+      } else {
+        df$id <- paste0("data_row_", seq_len(nrow(b$data)))
+      }
     }
     b$data$belop <- seq_len(nrow(b$data))
-    b$data_saer$belop <- nrow(b$data) + seq_len(nrow(b$data_saer))
+    if(!is.null(b$data_saer)){
+      b$data_saer$belop <- nrow(b$data) + seq_len(nrow(b$data_saer))
+    }
   }
   
   # Triks for å kalle get_a1234 uten å skrive alle parametere 
@@ -393,6 +402,11 @@ kostra_regnskap <- function(data,
     qf <- eval(my_call)
   }
   
+  matA <- NULL
+  matB <- NULL
+  bidragA <- NULL
+  bidragB <- NULL
+  
   if (!bidrag) {
     if (!is.null(b$formler)) {
       qq <- formel_korreksjon(q, qf, fm)
@@ -402,21 +416,16 @@ kostra_regnskap <- function(data,
     
     if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
       matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
-    } else {
-      matB <- NULL
-    }
+    } 
     
     if ("A" %in% b$regnskapsomfang) {
       matA <- (qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix + 
                qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + 
-               qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix + 
-               qq[[4]]$dataDummyHierarchy %*% qq[[4]]$valueMatrix)
-    } else {
-      matA <- NULL
-    }
-    
-    bidragA <- NULL
-    bidragB <- NULL
+               qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix)
+      if (!is.null(qq[[4]])) {
+        matA <- matA + qq[[4]]$dataDummyHierarchy %*% qq[[4]]$valueMatrix
+      }  
+    } 
     
   } else {
     q2 <- list(sum_netting(q[c(1, 4)]), sum_netting(q[c(2, 3)]))

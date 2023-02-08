@@ -1618,6 +1618,10 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     }
     
     if(return_beredt){
+      if (onlyB) {
+        data_saer <- NULL
+        arts32 <- NULL
+      }
       if(!isnk){
         arts41 = NULL
       }
