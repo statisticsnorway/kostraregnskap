@@ -9,6 +9,7 @@ pkg_env_kr_data <- new.env(parent=emptyenv())
 #' @encoding UTF8
 #'
 #' @param dataset Name of data set within the kostraregnskap package 
+#' @param periode To specify `periode` (see examples)
 #' @param path When non-NULL the data set is read from "path/dataset.RData"
 #'
 #' @return The data set

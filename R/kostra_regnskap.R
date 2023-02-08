@@ -283,12 +283,38 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 }  
 
 
-#' kostra_regnskap
+#' Bevilgningsregnskapet
+#' 
+#' Fornyet versjon av  \code{\link{KostraRegnskap}} med nye muligheter.
+#' 
+#' Denne funksjonen gjenbruker den gamle funksjonen \code{\link{KostraRegnskapEnPeriode}} 
+#' til å forbehandle input slik som i \code{\link{beredt}}. 
+#' Selve hovedberegningene foregår utenfor den gamle funksjonen.
+#' 
+#' I motsetning til \code{\link{KostraRegnskap}} så kjører denne funksjonen bare på data for én periode.
+#' Dersom variabelen `"periode"` finnes i input, blir `"periode"` også med i output.
+#' Dersom `periode` i input ikke er unik, blir det feilmelding. 
 #'
-#' @param ... dots
-#' @param output output 
+#' @inheritParams KostraRegnskapEnPeriode
+#' @param ... Flere parametere til \code{\link{KostraRegnskapEnPeriode}}. 
+#'        Spesielt kan disse parameterne være nytte i praksis: 
+#'        `kombinasjoner`, `regioner`, `storkombinasjoner`, `stjernetabell`, `funksjoner`, 
+#'        `arter`, `kontoklasser`, `formler`, `regnskapsomfang` og `useC`.
+#'        Ved `useC = TRUE` blir det `"C"` istedenfor `"B"` i output.
+#'        Men man trenger ikke å bruke `useC`-parameteren hvis man bruker 
+#'        parameteren `regnskapsomfang` og tar med `"C"` der (se eksempler). 
+#' @param output Dersom annet enn `"standard"` spesifiseres vil resultatet fra
+#'               \code{\link{KostraRegnskapEnPeriode}} returneres. 
+#' @param bidrag Ved `TRUE` vil det genereres tekststreng 
+#'               med funksjonen spesifisert med parameteren `fun_id_bidrag`.  
+#' @param generer_id Ved `TRUE` vil det genereres nye id-er i output-data 
+#'               med funksjonen spesifisert med parameteren `fun_generer_id`.  
+#' @param bidrag_var    Navn på variabel i output som genereres når `bidrag = TRUE`.   
+#' @param id_var Navn på id-variabel i input/output. 
+#' @param fun_id_bidrag  \code{\link{id_bidrag}} eller en tilsvarende funksjon.  
+#' @param fun_generer_id \code{\link{uuid_generate_time}} eller en tilsvarende funksjon.
 #'
-#' @return output
+#' @return En data frame
 #' @export
 #' 
 #' @examples 
@@ -319,30 +345,29 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #' z1[5, ]
 #' z1[7:10, ]
 #' 
-#' # Samme uten generering av bidrag
+#' 
+#' # Samme, men bruker id_bidrag2 som ikke tar med belop i "source"
 #' z2 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
 #'                       artshierarki = artshierarki, data_saer = inputdata_saer, 
 #'                       artshierarki_nettinger = artshierarki_nettinger, 
 #'                       artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
 #'                       stjernetabell = stjerne, formler = formler, 
 #'                       arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
-#'                       funksjoner = c("FG2", "FG1"), bidrag = FALSE)
-#' z2[c(3:7, 51:55),  ]
+#'                       funksjoner = c("FG2", "FG1"), fun_id_bidrag = id_bidrag2)
+#' z2[5, ]
 #' 
-#' 
-#' # Samme med C istedenfor B
+#' # Samme uten generering av bidrag
 #' z3 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
 #'                       artshierarki = artshierarki, data_saer = inputdata_saer, 
 #'                       artshierarki_nettinger = artshierarki_nettinger, 
 #'                       artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
 #'                       stjernetabell = stjerne, formler = formler, 
 #'                       arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
-#'                       funksjoner = c("FG2", "FG1"), bidrag = FALSE,
-#'                       useC = TRUE)
+#'                       funksjoner = c("FG2", "FG1"), bidrag = FALSE)
 #' z3[c(3:7, 51:55),  ]
 #' 
 #' 
-#' # Samme med C istedenfor B på annen måte. Samt ikke generering av id. 
+#' # Samme med C istedenfor B
 #' z4 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
 #'                       artshierarki = artshierarki, data_saer = inputdata_saer, 
 #'                       artshierarki_nettinger = artshierarki_nettinger, 
@@ -350,8 +375,20 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #'                       stjernetabell = stjerne, formler = formler, 
 #'                       arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
 #'                       funksjoner = c("FG2", "FG1"), bidrag = FALSE,
-#'                       regnskapsomfang = c("A", "C"), generer_id = FALSE)
+#'                       useC = TRUE)
 #' z4[c(3:7, 51:55),  ]
+#' 
+#' 
+#' # Samme med C istedenfor B på annen måte. Samt ikke generering av id. 
+#' z5 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+#'                       artshierarki = artshierarki, data_saer = inputdata_saer, 
+#'                       artshierarki_nettinger = artshierarki_nettinger, 
+#'                       artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+#'                       stjernetabell = stjerne, formler = formler, 
+#'                       arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+#'                       funksjoner = c("FG2", "FG1"), bidrag = FALSE,
+#'                       regnskapsomfang = c("A", "C"), generer_id = FALSE)
+#' z5[c(3:7, 51:55),  ]
 #' 
 #' 
 #' # Bare C i output 

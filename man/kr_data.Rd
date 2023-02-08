@@ -10,6 +10,8 @@ kr_data(dataset, periode = NULL, path = NULL)
 \arguments{
 \item{dataset}{Name of data set within the kostraregnskap package}
 
+\item{periode}{To specify \code{periode} (see examples)}
+
 \item{path}{When non-NULL the data set is read from "path/dataset.RData"}
 }
 \value{
