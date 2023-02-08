@@ -409,21 +409,19 @@ kostra_regnskap <- function(data,
   
   if (!bidrag) {
     if (!is.null(b$formler)) {
-      qq <- formel_korreksjon(q, qf, fm)
-    } else {
-      qq <- q
-    }
+      q <- formel_korreksjon(q, qf, fm)
+    } 
     
     if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
-      matB <- qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix
+      matB <- q[[1]]$dataDummyHierarchy %*% q[[1]]$valueMatrix
     } 
     
     if ("A" %in% b$regnskapsomfang) {
-      matA <- (qq[[1]]$dataDummyHierarchy %*% qq[[1]]$valueMatrix + 
-               qq[[2]]$dataDummyHierarchy %*% qq[[2]]$valueMatrix + 
-               qq[[3]]$dataDummyHierarchy %*% qq[[3]]$valueMatrix)
-      if (!is.null(qq[[4]])) {
-        matA <- matA + qq[[4]]$dataDummyHierarchy %*% qq[[4]]$valueMatrix
+      matA <- (q[[1]]$dataDummyHierarchy %*% q[[1]]$valueMatrix + 
+               q[[2]]$dataDummyHierarchy %*% q[[2]]$valueMatrix + 
+               q[[3]]$dataDummyHierarchy %*% q[[3]]$valueMatrix)
+      if (!is.null(q[[4]])) {
+        matA <- matA + q[[4]]$dataDummyHierarchy %*% q[[4]]$valueMatrix
       }  
     } 
     
@@ -431,32 +429,32 @@ kostra_regnskap <- function(data,
     q2 <- list(sum_netting(q[c(1, 4)]), sum_netting(q[c(2, 3)]))
     if (!is.null(b$formler)) {
       q2f <- list(sum_netting(qf[c(1, 4)]), sum_netting(qf[c(2, 3)]))
-      qq <- formel_korreksjon(c(q[1], q2), c(qf[1], q2f), fm)
+      q <- formel_korreksjon(c(q[1], q2), c(qf[1], q2f), fm)
     } else {
-      qq <- c(q[1], q2)
+      q <- c(q[1], q2)
     }
     if ("A" %in% b$regnskapsomfang) {
-      qq[[2]]$dataDummyHierarchy <- cbind(qq[[2]]$dataDummyHierarchy, qq[[3]]$dataDummyHierarchy)
-      qq[[2]]$valueMatrix <- as.matrix(rbind(qq[[2]]$valueMatrix, qq[[3]]$valueMatrix))
-      qq[3] <- NULL
-      value_matrix_A <- qq[[2]]$valueMatrix
-      value_matrix_A[qq[[2]]$valueMatrix > 0] <- df[["belop"]][qq[[2]]$valueMatrix]
-      matA <- qq[[2]]$dataDummyHierarchy %*% value_matrix_A
+      q[[2]]$dataDummyHierarchy <- cbind(q[[2]]$dataDummyHierarchy, q[[3]]$dataDummyHierarchy)
+      q[[2]]$valueMatrix <- as.matrix(rbind(q[[2]]$valueMatrix, q[[3]]$valueMatrix))
+      q[3] <- NULL
+      value_matrix_A <- q[[2]]$valueMatrix
+      value_matrix_A[q[[2]]$valueMatrix > 0] <- df[["belop"]][q[[2]]$valueMatrix]
+      matA <- q[[2]]$dataDummyHierarchy %*% value_matrix_A
       cat(" [bidragA..")
       flush.console()
-      bidragA <- id_bidrag_matrix(Matrix::t(qq[[2]]$dataDummyHierarchy), qq[[2]]$valueMatrix, df, 
+      bidragA <- id_bidrag_matrix(Matrix::t(q[[2]]$dataDummyHierarchy), q[[2]]$valueMatrix, df, 
                                   fun_id_bidrag = fun_id_bidrag)
       cat(".]")
       flush.console()
     }
     if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
-      qq[[1]]$valueMatrix <- as.matrix(qq[[1]]$valueMatrix)
-      value_matrix_B <- qq[[1]]$valueMatrix
-      value_matrix_B[qq[[1]]$valueMatrix > 0] <- df[["belop"]][qq[[1]]$valueMatrix]
-      matB <- qq[[1]]$dataDummyHierarchy %*% value_matrix_B
+      q[[1]]$valueMatrix <- as.matrix(q[[1]]$valueMatrix)
+      value_matrix_B <- q[[1]]$valueMatrix
+      value_matrix_B[q[[1]]$valueMatrix > 0] <- df[["belop"]][q[[1]]$valueMatrix]
+      matB <- q[[1]]$dataDummyHierarchy %*% value_matrix_B
       cat(" [bidragB..")
       flush.console()
-      bidragB <- id_bidrag_matrix(Matrix::t(qq[[1]]$dataDummyHierarchy), qq[[1]]$valueMatrix, df,
+      bidragB <- id_bidrag_matrix(Matrix::t(q[[1]]$dataDummyHierarchy), q[[1]]$valueMatrix, df,
                                   fun_id_bidrag = fun_id_bidrag)
       cat(".]")
       flush.console()
