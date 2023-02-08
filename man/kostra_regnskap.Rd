@@ -49,15 +49,62 @@ inputdata$UUID <- paste0("ce1f9682-data-data-8000-",
 inputdata_saer$UUID <- paste0("ca3679e0-data-saer-8000-", 
                                SSBtools::Number(seq_len(nrow(inputdata_saer)), 13))
 
-z <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
-                     artshierarki = artshierarki, data_saer = inputdata_saer, 
-                     artshierarki_nettinger = artshierarki_nettinger, 
-                     artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
-                     stjernetabell = stjerne, formler = formler, 
-                     arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
-                     funksjoner = c("FG2", "FG1"))
-z[1:10, 1:7]
-z[5, ]
-z[7:10, ]
+z1 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+                      artshierarki_nettinger = artshierarki_nettinger, 
+                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                      stjernetabell = stjerne, formler = formler, 
+                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+                      funksjoner = c("FG2", "FG1"))
+z1[1:10, 1:7]
+z1[5, ]
+z1[7:10, ]
+
+# Samme uten generering av bidrag
+z2 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+                      artshierarki_nettinger = artshierarki_nettinger, 
+                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                      stjernetabell = stjerne, formler = formler, 
+                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+                      funksjoner = c("FG2", "FG1"), bidrag = FALSE)
+z2[c(3:7, 51:55),  ]
+
+
+# Samme med C istedenfor B
+z3 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+                      artshierarki_nettinger = artshierarki_nettinger, 
+                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                      stjernetabell = stjerne, formler = formler, 
+                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+                      funksjoner = c("FG2", "FG1"), bidrag = FALSE,
+                      useC = TRUE)
+z3[c(3:7, 51:55),  ]
+
+
+# Samme med C istedenfor B på annen måte. Samt ikke generering av id. 
+z4 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+                      artshierarki_nettinger = artshierarki_nettinger, 
+                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                      stjernetabell = stjerne, formler = formler, 
+                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+                      funksjoner = c("FG2", "FG1"), bidrag = FALSE,
+                      regnskapsomfang = c("A", "C"), generer_id = FALSE)
+z4[c(3:7, 51:55),  ]
+
+
+# Bare C i output 
+z5 <- kostra_regnskap(data = inputdata, funksjonshierarki = funksjonshierarki, 
+                      artshierarki = artshierarki, data_saer = inputdata_saer, 
+                      artshierarki_nettinger = artshierarki_nettinger, 
+                      artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                      stjernetabell = stjerne, formler = formler, 
+                      arter = c("AGD9", "AGID1", "AGI14", "AGD32", "AGD65"), 
+                      funksjoner = c("FG2", "FG1"), bidrag = FALSE,
+                      regnskapsomfang = "C", generer_id = FALSE)
+z5[1:10,  ]
+
 
 }
