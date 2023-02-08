@@ -779,8 +779,10 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     isnk = !is.null(artshierarki_nettinger_kasse)
 
-    if(!isnk){
-      warning("artshierarki_nettinger_kasse er ikke i input. Alle kasse-nettinger blir 0.")
+    if(!isnk){  
+      if(!onlyB){
+        warning("artshierarki_nettinger_kasse er ikke i input. Alle kasse-nettinger blir 0.")
+      }
     } else {
 
       #if(autoNetting)
