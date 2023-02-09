@@ -16,7 +16,13 @@ balanse_regnskap(
   output = "standard",
   printData = TRUE,
   lag0300 = FALSE,
-  fixRegionkode = TRUE
+  fixRegionkode = TRUE,
+  bidrag = TRUE,
+  generer_id = TRUE,
+  bidrag_var = "source",
+  id_var = "UUID",
+  fun_id_bidrag = id_bidrag,
+  fun_generer_id = uuid_generate_time
 )
 }
 \arguments{
@@ -41,6 +47,20 @@ balanse_regnskap(
 \item{lag0300}{Ved TRUE kopieres region 0301 til 0300 i inputdata}
 
 \item{fixRegionkode}{Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)}
+
+\item{bidrag}{Ved \code{TRUE} vil det genereres tekststreng
+med funksjonen spesifisert med parameteren \code{fun_id_bidrag}.}
+
+\item{generer_id}{Ved \code{TRUE} vil det genereres nye id-er i output-data
+med funksjonen spesifisert med parameteren \code{fun_generer_id}.}
+
+\item{bidrag_var}{Navn på variabel i output som genereres når \code{bidrag = TRUE}.}
+
+\item{id_var}{Navn på id-variabel i input/output.}
+
+\item{fun_id_bidrag}{\code{\link{id_bidrag}} eller en tilsvarende funksjon.}
+
+\item{fun_generer_id}{\code{\link{uuid_generate_time}} eller en tilsvarende funksjon.}
 }
 \value{
 Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input

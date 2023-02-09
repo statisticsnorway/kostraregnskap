@@ -15,6 +15,7 @@
 #' @param printData Ved TRUE printes to første og to siste rader av alle inputdataene
 #' @param lag0300 Ved TRUE kopieres region 0301 til 0300 i inputdata
 #' @param fixRegionkode Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)
+#' @inheritParams kostra_regnskap
 #'
 #' @return Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input
 #' @export
@@ -43,8 +44,19 @@ balanse_regnskap <- function(data,kapittelhierarki,
                                     output = "standard",
                                     printData = TRUE,
                                     lag0300 = FALSE,
-                                    fixRegionkode = TRUE
-){
+                                    fixRegionkode = TRUE,
+                             bidrag = TRUE,
+                             generer_id = TRUE,
+                             bidrag_var = "source",
+                             id_var = "UUID",
+                             fun_id_bidrag = id_bidrag,
+                             fun_generer_id = uuid_generate_time){
+  
+  
+  if (output != "standard") {
+    bidrag <- FALSE
+    generer_id <- FALSE
+  }
   
   StopOrWarning = stop
   
@@ -380,9 +392,23 @@ balanse_regnskap <- function(data,kapittelhierarki,
     constantsInOutput <- NULL
   }
   
+  if (bidrag) {
+    data$row_nr <- seq_len(nrow(data))
+    value_var <- "row_nr"
+    output1 <- "matrixComponents"
+    if (id_var %in% names(data)) {
+      data$id <- data[[id_var]]
+    } else {
+      data$id <- c(paste0("data_row_", seq_len(nrow(data))))
+    }
+    
+  } else {
+    value_var <- "belop"
+  }
+  
   w = HierarchyCompute(data=data,
                        hierarchies=hierarkier,
-                       valueVar = "belop",
+                       valueVar = value_var,
                        rowSelect = kombinasjoner,
                        colSelect = regioner,
                        autoLevel = TRUE,
@@ -391,6 +417,29 @@ balanse_regnskap <- function(data,kapittelhierarki,
                        hierarchyVarNames=c(mapsFrom="from", mapsTo ="to", sign="sign", level="level"),
                        inputInOutput=TRUE,
                        output=output1)
+  
+  bidragB <- NULL
+  if (bidrag) {
+    w$valueMatrix <- as.matrix(w$valueMatrix)
+    value_matrix_B <- w$valueMatrix
+    value_matrix_B[w$valueMatrix > 0] <- data[["belop"]][w$valueMatrix]
+    matB <- w$dataDummyHierarchy %*% value_matrix_B
+    if (!is.null(fun_id_bidrag)) {
+      cat(" [bidrag..")
+      flush.console()
+      bidragB <- id_bidrag_matrix(Matrix::t(w$dataDummyHierarchy), w$valueMatrix, data, fun_id_bidrag = fun_id_bidrag)
+      bidragB <- as.vector(as.matrix(bidragB))
+      cat(".]")
+      flush.console()
+    }
+    w <- cbind(data.frame(region = rep(colnames(w$valueMatrix), each = nrow(w$toCrossCode))), 
+               w$toCrossCode, 
+               belop = as.vector(as.matrix(matB)))
+    
+    if (length(periode)) {
+      w <- cbind(periode = periode, w)
+    }
+  }
   
   if(output=="matrixComponents")
     return(w)
@@ -405,9 +454,20 @@ balanse_regnskap <- function(data,kapittelhierarki,
     cat(" [ utvalg til storkombinasjoner...")
     flush.console()
     w = w[storkOrder, ,drop=FALSE]
+    if (!is.null(bidragB)) {
+      bidragB <- bidragB[storkOrder]
+    }
     cat("]\n")
     flush.console()
   }
+  
+  if (generer_id) {
+    w[[id_var]] <- fun_generer_id(nrow(w))
+  } 
+  if (!is.null(bidragB)) {
+    w[[bidrag_var]] <- bidragB
+  }
+  
   rownames(w) = NULL
   flush.console()
   
