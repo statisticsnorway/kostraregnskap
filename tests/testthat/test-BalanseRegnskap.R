@@ -48,8 +48,21 @@ test_that("BalanseRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.
   expect_equal(anyNA(Match(z2, zVanlig)), FALSE)
   expect_equal(z2[, -1],z3[ , -1])
 
-
-
+  co <- capture.output({
+    za <- balanse_regnskap(kr_data("balansedata"), kr_data("kapittelhierarki"), regioner = c("0100", "0301", "2021"), omfang = c("B", "A" ), kapitler = c("KG3", "KG2"))
+    zb <- balanse_regnskap(kr_data("balansedata"), kr_data("kapittelhierarki"), regioner = c("0100", "0301", "2021"), omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
+                           generer_id = FALSE, bidrag = FALSE)
+    zc <- balanse_regnskap(kr_data("balansedata"), kr_data("kapittelhierarki"), regioner = c("0100", "0301", "2021"), omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
+                           generer_id = FALSE, fun_id_bidrag = id_bidrag_expression)
+  })
+  
+  z2 <- z2[-1]
+  expect_equal(z2, za[names(z2)])
+  expect_equal(z2, zb[names(z2)])
+  expect_equal(z2, zc[names(z2)])
+  belop <- rep(NaN, nrow(zc))
+  for (i in 1:nrow(zc)) belop[i] <- eval(parse(text = zc[["source"]][i]))
+  expect_equal(belop, zc$belop)
 })
 
 
