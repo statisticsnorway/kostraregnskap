@@ -197,6 +197,7 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #' @param arter arter som skal med i output. Man kan også bruke  *, ?, ! og – tilsvarende som for regioner (se nedenfor).
 #' @param kontoklasser kontoklasser som skal med i output. Det er mulig å bruke * istedenfor NULL til å velge alle kontoklosser.
 #' @param regnskapsomfang regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.
+#'                        Man kan også spesifisere `"C"` istedenfor `"B"` istedenfor.
 #' @param printInfo Ved TRUE printes informasjon om generering av kombinasjoner fra stjernetabell samt informasjon om omskriving av formler.
 #' @param printData Ved TRUE printes to første og to siste rader av alle inputdataene
 #' @param lag0300 Ved TRUE kopieres region 0301 til 0300 i inputdata
@@ -214,6 +215,8 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #'                   Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.
 #' @param useC  Ved TRUE: `"C"` istedenfor `"B"` i output. 
 #'              Default er `FALSE` med mindre `C` er med i inputparameter regnskapsomfang.
+#'        Men man trenger altså ikke å bruke `useC`-parameteren hvis man bruker 
+#'        parameteren `regnskapsomfang` og tar med `"C"` der (se eksempler).
 #' @param handleDuplicated Parameter til \code{\link{HierarchyCompute}}.       
 #'
 #' @return En data frame

@@ -122,7 +122,8 @@ Denne er det ikke mulig å kjøre via \code{KostraRegnskap} med flere perioder i
 
 \item{storkombinasjoner}{kombinasjoner av art, funksjon, kontoklasse og region}
 
-\item{regnskapsomfang}{regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.}
+\item{regnskapsomfang}{regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.
+Man kan også spesifisere \code{"C"} istedenfor \code{"B"} istedenfor.}
 
 \item{printInfo}{Ved TRUE printes informasjon om generering av kombinasjoner fra stjernetabell samt informasjon om omskriving av formler.}
 
@@ -150,7 +151,9 @@ Spesielt ved valg av regnskapsomfang B kan data_saer og/eller artshierarki_netti
 Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.}
 
 \item{useC}{Ved TRUE: \code{"C"} istedenfor \code{"B"} i output.
-Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.}
+Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.
+Men man trenger altså ikke å bruke \code{useC}-parameteren hvis man bruker
+parameteren \code{regnskapsomfang} og tar med \code{"C"} der (se eksempler).}
 
 \item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.}
 }

@@ -297,12 +297,6 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #'
 #' @inheritParams KostraRegnskapEnPeriode
 #' @param ... Flere parametere til \code{\link{KostraRegnskapEnPeriode}}. 
-#'        Spesielt kan disse parameterne være nytte i praksis: 
-#'        `kombinasjoner`, `regioner`, `storkombinasjoner`, `stjernetabell`, `funksjoner`, 
-#'        `arter`, `kontoklasser`, `formler`, `regnskapsomfang` og `useC`.
-#'        Ved `useC = TRUE` blir det `"C"` istedenfor `"B"` i output.
-#'        Men man trenger ikke å bruke `useC`-parameteren hvis man bruker 
-#'        parameteren `regnskapsomfang` og tar med `"C"` der (se eksempler). 
 #' @param output Dersom annet enn `"standard"` spesifiseres vil resultatet fra
 #'               \code{\link{KostraRegnskapEnPeriode}} returneres. 
 #' @param bidrag Ved `TRUE` vil det genereres tekststreng 
@@ -406,9 +400,19 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 kostra_regnskap <- function(data,
                             funksjonshierarki,
                             artshierarki,
-                            data_saer=NULL,
-                            artshierarki_nettinger=NULL,
-                            artshierarki_nettinger_kasse=NULL,
+                            data_saer = NULL,
+                            artshierarki_nettinger = NULL,
+                            artshierarki_nettinger_kasse = NULL,
+                            kombinasjoner = NULL,
+                            regioner = NULL,
+                            storkombinasjoner = NULL,
+                            stjernetabell = NULL,
+                            funksjoner = NULL,
+                            arter = NULL,
+                            kontoklasser = NULL,
+                            formler = NULL,
+                            regnskapsomfang = NULL,
+                            useC = any(c(grepl("C", regnskapsomfang))),
                             ..., 
                             output = "standard",
                             bidrag = TRUE,
@@ -444,6 +448,16 @@ kostra_regnskap <- function(data,
                                data_saer = data_saer,
                                artshierarki_nettinger = artshierarki_nettinger,
                                artshierarki_nettinger_kasse = artshierarki_nettinger_kasse,
+                               kombinasjoner = kombinasjoner,
+                               regioner = regioner,
+                               storkombinasjoner = storkombinasjoner,
+                               stjernetabell = stjernetabell,
+                               funksjoner = funksjoner,
+                               arter = arter,
+                               kontoklasser = kontoklasser,
+                               formler = formler,
+                               regnskapsomfang = regnskapsomfang,
+                               useC = any(c(grepl("C", regnskapsomfang))),
                                ..., output = output)
   
   
