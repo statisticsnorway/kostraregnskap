@@ -1,8 +1,6 @@
-#' BalanseRegnskap
+#' balanse_regnskap
 #'
 #' Funksjon som ligner på KostraRegnskap, men mye enklere.
-#'
-#' @rdname BalanseRegnskap
 #'
 #' @encoding UTF8
 #'
@@ -31,26 +29,18 @@
 #'
 #' # Her brukes data som ligger i pakken der bare noen regioner er med.
 #'
-#' bData <- kr_data("balanseRegnskapDataPen") # kr_data("balanseRegnskapDataPen") er alternativ der
-#' inputdata <- bData$data                    #    automatisk omkoding trengs (som fixRegionkode)
-#' hierarki <- bData$kapittelhierarki         #    Fungerer like bra, men med flere warning
+#' inputdata <- kr_data("balansedata")  
+#' hierarki <- kr_data("kapittelhierarki")  
 #'
-#' z <- BalanseRegnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301", "1100"))
-#' xA <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "A", 
-#'                                     kapitler = "KG3")
-#' xB <- BalanseRegnskapBeregningInput(inputdata, hierarki, regioner = "0301", omfang = "B", 
-#'                                     kapitler = "KG3")
-#' yA <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "A", 
-#'                                     kapitler = "KG3")
-#' yB <- BalanseRegnskapBeregningHierarki(inputdata, hierarki, regioner = "0301", omfang = "B", 
-#'                                     kapitler = "KG3")
-BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
+#' z <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
+#' 
+balanse_regnskap <- function(data,kapittelhierarki,
                                     kombinasjoner=NULL,
                                     regioner=NULL,
                                     storkombinasjoner=NULL,
                                     kapitler  = NULL,
                                     omfang = NULL,
-                                    output="en",
+                                    output = "standard",
                                     printData = TRUE,
                                     lag0300 = FALSE,
                                     fixRegionkode = TRUE
@@ -120,7 +110,7 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
   periode = unique(c(as.character(data$periode),
                      as.character(kapittelhierarki$periode)))
   
-  if(length(periode) == 0)
+  if(length(periode) == 0 & !(output %in% c("standard", "matrixComponents")))
     stop("periode finnes ikke i input")
   if(length(periode) > 1)
     stop(paste("periode er ikke unik:",paste(periode,collapse=", ")))
@@ -135,7 +125,7 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
   
   ####omfangAll  = unique(data$regnskapsomfang)#### Hardkoder isteden  siden beregnigstest kan feile hvis alle ikke er med
   omfangAll  =  c("B","sbedr","lanefond")    # A skal ikke med her.
-  omfangshierarki <- kapittelhierarki[rep(1,length(omfangAll)),c("periode","to","from","sign"),drop=FALSE]
+  omfangshierarki <- kapittelhierarki[rep(1,length(omfangAll)),c("to","from","sign"),drop=FALSE]
   omfangshierarki$to = "A"
   omfangshierarki$from = omfangAll
   omfangshierarki$sign = "+"
@@ -384,6 +374,11 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
   
   hierarkier = list(kapittel = kapittelhierarki, regnskapsomfang=omfangshierarki, region = "colFactor")
   
+  if (length(periode)) {
+    constantsInOutput <- data.frame(periode = periode, stringsAsFactors = FALSE)
+  } else {
+    constantsInOutput <- NULL
+  }
   
   w = HierarchyCompute(data=data,
                        hierarchies=hierarkier,
@@ -392,7 +387,7 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
                        colSelect = regioner,
                        autoLevel = TRUE,
                        unionComplement=FALSE,
-                       constantsInOutput=data.frame(periode=periode,stringsAsFactors=FALSE),
+                       constantsInOutput = constantsInOutput,
                        hierarchyVarNames=c(mapsFrom="from", mapsTo ="to", sign="sign", level="level"),
                        inputInOutput=TRUE,
                        output=output1)
