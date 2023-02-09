@@ -1,6 +1,17 @@
-#' balanse_regnskap
+#' Balanseregnskapet
+#' 
+#' Fornyet versjon av  \code{\link{BalanseRegnskap}} med nye muligheter.
+#' 
+#' Denne funksjonen er utvidelse av den gamle funksjonen \code{\link{BalanseRegnskapEnPeriode}}. 
+#' Faktisk er nå `BalanseRegnskapEnPeriode` kun en wrapper til denne funksjonen.
+#' 
+#' I motsetning til \code{\link{BalanseRegnskap}} så kjører denne funksjonen bare på data for én periode.
+#' Dersom variabelen `"periode"` finnes i input, blir `"periode"` også med i output.
+#' Dersom `periode` i input ikke er unik, blir det feilmelding. 
+#' 
+#' Dersom `fun_generer_id` settes til `NULL` blir output det samme som ved `bidrag = FALSE`, 
+#' men beregningene foregår med den litt mer tungvinte bidrag-TRUE-metoden.  
 #'
-#' Funksjon som ligner på KostraRegnskap, men mye enklere.
 #'
 #' @encoding UTF8
 #'
@@ -11,7 +22,8 @@
 #' @param storkombinasjoner  kombinasjoner kapitler,regnskapsomfang og region som skal med i output
 #' @param kapitler kapitler som skal med i output
 #' @param omfang  regnskapsomfang som skal med i output
-#' @param output kode for type output som (brukes av BalanseRegnskapBeregningHierarki og BalanseRegnskapBeregningInput)
+#' @param output Dersom annet enn `"standard"` spesifiseres vil resultatet som returneres 
+#'               være som resultatet fra den gamle \code{\link{BalanseRegnskapEnPeriode}}. 
 #' @param printData Ved TRUE printes to første og to siste rader av alle inputdataene
 #' @param lag0300 Ved TRUE kopieres region 0301 til 0300 i inputdata
 #' @param fixRegionkode Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)
@@ -24,7 +36,7 @@
 #' @importFrom utils flush.console head tail
 #' @importFrom stringr str_replace_all str_replace
 #'
-#' @seealso \code{\link{KostraRegnskap}}, \code{\link{HierarchyCompute}}, \code{\link{HierarchicalWildcardGlobbing}}
+#' @seealso \code{\link{kostra_regnskap}}, \code{\link{HierarchyCompute}}, \code{\link{HierarchicalWildcardGlobbing}}
 #'
 #' @examples
 #'
@@ -32,8 +44,25 @@
 #'
 #' inputdata <- kr_data("balansedata")  
 #' hierarki <- kr_data("kapittelhierarki")  
+#' 
+#' inputdata$UUID <- paste0("ed1716d4-a869-11ed-8000-", 
+#'                           SSBtools::Number(seq_len(nrow(inputdata)), 13))
 #'
-#' z <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
+#' z1 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
+#' z1[36:41, ]
+#' 
+#' z2 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+#'                        fun_id_bidrag = id_bidrag2, generer_id = FALSE)
+#' z2[36:41, ]
+#' 
+#' z3 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+#'                        bidrag = FALSE)
+#' z3[36:41, ] 
+#' 
+#' z4 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+#'                        omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
+#'                        bidrag = FALSE, generer_id = FALSE)
+#' z4 
 #' 
 balanse_regnskap <- function(data,kapittelhierarki,
                                     kombinasjoner=NULL,
@@ -42,7 +71,7 @@ balanse_regnskap <- function(data,kapittelhierarki,
                                     kapitler  = NULL,
                                     omfang = NULL,
                                     output = "standard",
-                                    printData = TRUE,
+                                    printData = FALSE,
                                     lag0300 = FALSE,
                                     fixRegionkode = TRUE,
                              bidrag = TRUE,

@@ -99,6 +99,7 @@ BalanseRegnskap = function(data,kapittelhierarki,
 #' @encoding UTF8
 #' 
 #' @inheritParams balanse_regnskap
+#' @param output kode for type output som (brukes av BalanseRegnskapBeregningHierarki og BalanseRegnskapBeregningInput)
 #'
 #' @return Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input
 #' @export

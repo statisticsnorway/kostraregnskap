@@ -3,7 +3,7 @@
 \encoding{UTF8}
 \name{balanse_regnskap}
 \alias{balanse_regnskap}
-\title{balanse_regnskap}
+\title{Balanseregnskapet}
 \usage{
 balanse_regnskap(
   data,
@@ -14,7 +14,7 @@ balanse_regnskap(
   kapitler = NULL,
   omfang = NULL,
   output = "standard",
-  printData = TRUE,
+  printData = FALSE,
   lag0300 = FALSE,
   fixRegionkode = TRUE,
   bidrag = TRUE,
@@ -40,7 +40,8 @@ balanse_regnskap(
 
 \item{omfang}{regnskapsomfang som skal med i output}
 
-\item{output}{kode for type output som (brukes av BalanseRegnskapBeregningHierarki og BalanseRegnskapBeregningInput)}
+\item{output}{Dersom annet enn \code{"standard"} spesifiseres vil resultatet som returneres
+være som resultatet fra den gamle \code{\link{BalanseRegnskapEnPeriode}}.}
 
 \item{printData}{Ved TRUE printes to første og to siste rader av alle inputdataene}
 
@@ -66,7 +67,18 @@ med funksjonen spesifisert med parameteren \code{fun_generer_id}.}
 Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input
 }
 \description{
-Funksjon som ligner på KostraRegnskap, men mye enklere.
+Fornyet versjon av  \code{\link{BalanseRegnskap}} med nye muligheter.
+}
+\details{
+Denne funksjonen er utvidelse av den gamle funksjonen \code{\link{BalanseRegnskapEnPeriode}}.
+Faktisk er nå \code{BalanseRegnskapEnPeriode} kun en wrapper til denne funksjonen.
+
+I motsetning til \code{\link{BalanseRegnskap}} så kjører denne funksjonen bare på data for én periode.
+Dersom variabelen \code{"periode"} finnes i input, blir \code{"periode"} også med i output.
+Dersom \code{periode} i input ikke er unik, blir det feilmelding.
+
+Dersom \code{fun_generer_id} settes til \code{NULL} blir output det samme som ved \code{bidrag = FALSE},
+men beregningene foregår med den litt mer tungvinte bidrag-TRUE-metoden.
 }
 \examples{
 
@@ -75,9 +87,26 @@ Funksjon som ligner på KostraRegnskap, men mye enklere.
 inputdata <- kr_data("balansedata")  
 hierarki <- kr_data("kapittelhierarki")  
 
-z <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
+inputdata$UUID <- paste0("ed1716d4-a869-11ed-8000-", 
+                          SSBtools::Number(seq_len(nrow(inputdata)), 13))
+
+z1 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
+z1[36:41, ]
+
+z2 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+                       fun_id_bidrag = id_bidrag2, generer_id = FALSE)
+z2[36:41, ]
+
+z3 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+                       bidrag = FALSE)
+z3[36:41, ] 
+
+z4 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
+                       omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
+                       bidrag = FALSE, generer_id = FALSE)
+z4 
 
 }
 \seealso{
-\code{\link{KostraRegnskap}}, \code{\link{HierarchyCompute}}, \code{\link{HierarchicalWildcardGlobbing}}
+\code{\link{kostra_regnskap}}, \code{\link{HierarchyCompute}}, \code{\link{HierarchicalWildcardGlobbing}}
 }
