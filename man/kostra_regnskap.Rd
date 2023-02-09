@@ -105,6 +105,9 @@ Selve hovedberegningene foregår utenfor den gamle funksjonen.
 I motsetning til \code{\link{KostraRegnskap}} så kjører denne funksjonen bare på data for én periode.
 Dersom variabelen \code{"periode"} finnes i input, blir \code{"periode"} også med i output.
 Dersom \code{periode} i input ikke er unik, blir det feilmelding.
+
+Dersom \code{fun_generer_id} settes til \code{NULL} blir output det samme som ved \code{bidrag = FALSE},
+men beregningene foregår med den litt mer tungvinte bidrag-TRUE-metoden.
 }
 \examples{
 aar <- 2015  # 2016 kan også velges 

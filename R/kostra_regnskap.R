@@ -294,6 +294,9 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #' I motsetning til \code{\link{KostraRegnskap}} så kjører denne funksjonen bare på data for én periode.
 #' Dersom variabelen `"periode"` finnes i input, blir `"periode"` også med i output.
 #' Dersom `periode` i input ikke er unik, blir det feilmelding. 
+#' 
+#' Dersom `fun_generer_id` settes til `NULL` blir output det samme som ved `bidrag = FALSE`, 
+#' men beregningene foregår med den litt mer tungvinte bidrag-TRUE-metoden.  
 #'
 #' @inheritParams KostraRegnskapEnPeriode
 #' @param handleDuplicated  Parameter til \code{\link{HierarchyCompute}}.  
@@ -545,24 +548,28 @@ kostra_regnskap <- function(data,
       value_matrix_A <- q[[2]]$valueMatrix
       value_matrix_A[q[[2]]$valueMatrix > 0] <- df[["belop"]][q[[2]]$valueMatrix]
       matA <- q[[2]]$dataDummyHierarchy %*% value_matrix_A
-      cat(" [bidragA..")
-      flush.console()
-      bidragA <- id_bidrag_matrix(Matrix::t(q[[2]]$dataDummyHierarchy), q[[2]]$valueMatrix, df, 
-                                  fun_id_bidrag = fun_id_bidrag)
-      cat(".]")
-      flush.console()
+      if (!is.null(fun_id_bidrag)) {
+        cat(" [bidragA..")
+        flush.console()
+        bidragA <- id_bidrag_matrix(Matrix::t(q[[2]]$dataDummyHierarchy), q[[2]]$valueMatrix, df, 
+                                    fun_id_bidrag = fun_id_bidrag)
+        cat(".]")
+        flush.console()
+      }
     }
     if ("B" %in% b$regnskapsomfang | "C" %in% b$regnskapsomfang) {
       q[[1]]$valueMatrix <- as.matrix(q[[1]]$valueMatrix)
       value_matrix_B <- q[[1]]$valueMatrix
       value_matrix_B[q[[1]]$valueMatrix > 0] <- df[["belop"]][q[[1]]$valueMatrix]
       matB <- q[[1]]$dataDummyHierarchy %*% value_matrix_B
-      cat(" [bidragB..")
-      flush.console()
-      bidragB <- id_bidrag_matrix(Matrix::t(q[[1]]$dataDummyHierarchy), q[[1]]$valueMatrix, df,
-                                  fun_id_bidrag = fun_id_bidrag)
-      cat(".]")
-      flush.console()
+      if (!is.null(fun_id_bidrag)) {
+        cat(" [bidragB..")
+        flush.console()
+        bidragB <- id_bidrag_matrix(Matrix::t(q[[1]]$dataDummyHierarchy), q[[1]]$valueMatrix, df,
+                                    fun_id_bidrag = fun_id_bidrag)
+        cat(".]")
+        flush.console()
+      }
     }
   }
   

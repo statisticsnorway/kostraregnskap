@@ -232,11 +232,11 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
                                    funksjoner=c("FG2","FG1"), regioner = "0301"))
     
-    z_2015c <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+    z_2015c <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
                                    data_saer = NULL, artshierarki_nettinger = NULL,
                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
                                    funksjoner=c("FG2","FG1"), regioner = "0301",
-                                   regnskapsomfang = "C"))
+                                   regnskapsomfang = "C")
     
     
     z_2015aF <- kostra_regnskap_aar(arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
@@ -246,11 +246,22 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
                                     arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
                                     funksjoner=c("FG2","FG1"), regioner = "0301", bidrag = FALSE))
     
-    z_2015cF <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+    z_2015cF <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
                                    data_saer = NULL, artshierarki_nettinger = NULL,
                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
                                    funksjoner=c("FG2","FG1"), regioner = "0301",
-                                   regnskapsomfang = "C", bidrag = FALSE))
+                                   regnskapsomfang = "C", bidrag = FALSE)
+    
+    z_2015bG <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                                      arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                                      funksjoner=c("FG2","FG1"), regioner = "0301", 
+                                                      fun_id_bidrag = NULL))
+    
+    z_2015cG <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                    data_saer = NULL, artshierarki_nettinger = NULL,
+                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                    funksjoner=c("FG2","FG1"), regioner = "0301",
+                                    regnskapsomfang = "C", fun_id_bidrag = NULL)
   })
   
 
@@ -259,8 +270,10 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
   expect_equivalent(z_2015a[1:6], z_2015aF[1:6])
   expect_equivalent(zV2015b[-1],  z_2015b[1:6])
   expect_equivalent(z_2015b[1:6], z_2015bF[1:6])
+  expect_equivalent(z_2015b[1:6], z_2015bG[1:6])
   expect_equivalent(zV2015c[-1],  z_2015c[1:6])
   expect_equivalent(z_2015c[1:6], z_2015cF[1:6])
+  expect_equivalent(z_2015c[1:6], z_2015cG[1:6])
   expect_equivalent(zV2015a[9:16, 3:7],  zV2015c[, 3:7])
   
 })
