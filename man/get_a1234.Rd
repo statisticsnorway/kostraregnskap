@@ -14,7 +14,7 @@ get_a1234(
   regioner,
   kombinasjoner,
   rowsInputArt,
-  handleDuplicated = "stop",
+  handleDuplicated,
   useMatrixToDataFrame = TRUE,
   ...
 )

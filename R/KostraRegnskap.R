@@ -1655,7 +1655,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                    rowsInputArt = rowsInputArt,
                    periode=periode,
                    regnskapsomfang = regnskapsomfang,
-                   integerInOutput = integerInOutput
+                   integerInOutput = integerInOutput, 
+                   handleDuplicated = handleDuplicated
       )))
     }
 

@@ -37,7 +37,7 @@ beredt = function(...){
 get_a1234 <- function(data, data_saer = NULL, funksjonshierarki, artshierarki, 
                       arts32 = NULL, arts41 = NULL, regioner, 
                       kombinasjoner, rowsInputArt, 
-                      handleDuplicated = "stop", useMatrixToDataFrame = TRUE,
+                      handleDuplicated, useMatrixToDataFrame = TRUE,
                       ...) {
   onlyB <- is.null(data_saer)
   isnk <- !is.null(arts41)
@@ -296,6 +296,8 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
 #' Dersom `periode` i input ikke er unik, blir det feilmelding. 
 #'
 #' @inheritParams KostraRegnskapEnPeriode
+#' @param handleDuplicated  Parameter til \code{\link{HierarchyCompute}}.  
+#'        Bare `"stop"` mulig  når `bidrag = TRUE`.
 #' @param ... Flere parametere til \code{\link{KostraRegnskapEnPeriode}}. 
 #' @param output Dersom annet enn `"standard"` spesifiseres vil resultatet fra
 #'               \code{\link{KostraRegnskapEnPeriode}} returneres. 
@@ -413,6 +415,7 @@ kostra_regnskap <- function(data,
                             formler = NULL,
                             regnskapsomfang = NULL,
                             useC = any(c(grepl("C", regnskapsomfang))),
+                            handleDuplicated = "stop",
                             ..., 
                             output = "standard",
                             bidrag = TRUE,
@@ -457,7 +460,8 @@ kostra_regnskap <- function(data,
                                kontoklasser = kontoklasser,
                                formler = formler,
                                regnskapsomfang = regnskapsomfang,
-                               useC = any(c(grepl("C", regnskapsomfang))),
+                               useC = useC,
+                               handleDuplicated = handleDuplicated, 
                                ..., output = output)
   
   
@@ -469,6 +473,9 @@ kostra_regnskap <- function(data,
   }
   
   if (bidrag) {
+    if(handleDuplicated != "stop"){
+      stop('Bare handleDuplicated="stop" mulig når bidrag=TRUE')
+    }
     df <- rbind(b$data["belop"], b$data_saer["belop"])
     if (id_var %in% names(b$data) & id_var %in% names(b$data_saer)) {
       if(!is.null(b$data_saer)){

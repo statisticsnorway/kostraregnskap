@@ -21,6 +21,7 @@ kostra_regnskap(
   formler = NULL,
   regnskapsomfang = NULL,
   useC = any(c(grepl("C", regnskapsomfang))),
+  handleDuplicated = "stop",
   ...,
   output = "standard",
   bidrag = TRUE,
@@ -67,6 +68,9 @@ Man kan også spesifisere \code{"C"} istedenfor \code{"B"} istedenfor.}
 Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.
 Men man trenger altså ikke å bruke \code{useC}-parameteren hvis man bruker
 parameteren \code{regnskapsomfang} og tar med \code{"C"} der (se eksempler).}
+
+\item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.
+Bare \code{"stop"} mulig  når \code{bidrag = TRUE}.}
 
 \item{...}{Flere parametere til \code{\link{KostraRegnskapEnPeriode}}.}
 
