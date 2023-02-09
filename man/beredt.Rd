@@ -7,11 +7,39 @@
 beredt(...)
 }
 \arguments{
-\item{...}{Input til \code{\link{KostraRegnskapEnPeriode}}}
+\item{...}{Input til \code{\link{KostraRegnskapEnPeriode}} eller \code{\link{kostra_regnskap}}.}
 }
 \value{
 Liste med data som er forberedt
+\itemize{
+\item \strong{\code{data}:} Korrigert versjon av input.
+\item \strong{\code{data_saer}:} Korrigert versjon av input.
+\item \strong{\code{funksjonshierarki}:} Korrigert versjon av input.
+\item \strong{\code{artshierarki}:}      Korrigert versjon av input.
+\item \strong{\code{arts32}:}   \code{artshierarki_nettinger} er først korrigert og \code{"COPY"} håndtert (\code{\link{AutoNettingCopy}}).
+Deretter er hierarkiet omskrevet til å ta utgangspunkt i \code{data_saer}.
+\item \strong{\code{arts41}:}   \code{artshierarki_nettinger_kasse} er først korrigert og \code{"COPY"} håndtert (\code{\link{AutoNettingCopy}}).
+Deretter er hierarkiet omskrevet til å ta utgangspunkt i \code{data}.
+\item \strong{\code{regioner}:}  Korrigert versjon av input eller beregnet fra annen input (\code{stjernetabell}, \code{storkombinasjoner}).
+\item \strong{\code{kombinasjoner}:} Korrigert versjon av input eller beregnet fra annen input
+(\code{stjernetabell}, \code{storkombinasjoner}, \code{funksjoner}, \code{arter}, \code{kontoklasser}).
+\item \strong{\code{storkombinasjoner}:} Korrigert versjon av input eller beregnet fra annen input (\code{stjernetabell}).
+\item \strong{\code{storkOrder}:} Indekser som brukes når endelig output skal lages for å passe med \code{storkombinasjoner}.
+\item \strong{\code{formler}:} Formler omskrevet med \code{\link{AutoFormel}}.
+\item \strong{\code{rowsInputArt}:}  Se \code{\link{get_a1234}}
+\item \strong{\code{periode}:}  \code{periode} (kan være missing)
+\item \strong{\code{regnskapsomfang}:} Korrigert versjon av input slik at den er angitt presist.
+\item \strong{\code{integerInOutput}:} \code{TRUE} når \code{belop} i output skal omgøres til integer.
+\item \strong{\code{handleDuplicated}:}  Som input.
+}
 }
 \description{
-Forbehandling av input
+Denne funksjonen gjenbruker den gamle funksjonen \code{\link{KostraRegnskapEnPeriode}}
+til å forbehandle input.
+}
+\details{
+Korrigeringer av input handler om endring i henhold til
+\code{fixRegionkode}, \code{fixArtkode}, \code{fixFunksjonkode}.
+Bruk av av \code{lag0300} kan også tenkes.
+Se \code{\link{KostraRegnskapEnPeriode}}.
 }

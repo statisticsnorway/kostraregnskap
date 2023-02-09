@@ -28,7 +28,7 @@ get_a1234(
 
 \item{artshierarki}{artshierarki}
 
-\item{arts32}{artshierarki_nettinger omgjort til hierarki som kan beregnes fra \code{data}}
+\item{arts32}{artshierarki_nettinger omgjort til hierarki som kan beregnes fra \code{data_saer}}
 
 \item{arts41}{artshierarki_nettinger_kasse omgjort til hierarki som kan beregnes fra \code{data}}
 

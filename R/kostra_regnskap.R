@@ -1,9 +1,37 @@
 
 #' Forbehandling av input  
+#' 
+#' Denne funksjonen gjenbruker den gamle funksjonen \code{\link{KostraRegnskapEnPeriode}} 
+#' til å forbehandle input.
+#' 
+#' Korrigeringer av input handler om endring i henhold til 
+#' `fixRegionkode`, `fixArtkode`, `fixFunksjonkode`.  
+#' Bruk av av `lag0300` kan også tenkes.
+#' Se \code{\link{KostraRegnskapEnPeriode}}.
+#' 
 #'
-#' @param ... Input til \code{\link{KostraRegnskapEnPeriode}}
+#' @param ... Input til \code{\link{KostraRegnskapEnPeriode}} eller \code{\link{kostra_regnskap}}.
 #'
 #' @return Liste med data som er forberedt
+#' * **`data`:** Korrigert versjon av input.
+#' * **`data_saer`:** Korrigert versjon av input.
+#' * **`funksjonshierarki`:** Korrigert versjon av input. 
+#' * **`artshierarki`:**      Korrigert versjon av input.
+#' * **`arts32`:**   `artshierarki_nettinger` er først korrigert og `"COPY"` håndtert (\code{\link{AutoNettingCopy}}). 
+#'                    Deretter er hierarkiet omskrevet til å ta utgangspunkt i `data_saer`.
+#' * **`arts41`:**   `artshierarki_nettinger_kasse` er først korrigert og `"COPY"` håndtert (\code{\link{AutoNettingCopy}}). 
+#'                    Deretter er hierarkiet omskrevet til å ta utgangspunkt i `data`.
+#' * **`regioner`:**  Korrigert versjon av input eller beregnet fra annen input (`stjernetabell`, `storkombinasjoner`).  
+#' * **`kombinasjoner`:** Korrigert versjon av input eller beregnet fra annen input 
+#'                        (`stjernetabell`, `storkombinasjoner`, `funksjoner`, `arter`, `kontoklasser`).
+#' * **`storkombinasjoner`:** Korrigert versjon av input eller beregnet fra annen input (`stjernetabell`).
+#' * **`storkOrder`:** Indekser som brukes når endelig output skal lages for å passe med `storkombinasjoner`.
+#' * **`formler`:** Formler omskrevet med \code{\link{AutoFormel}}.
+#' * **`rowsInputArt`:**  Se \code{\link{get_a1234}}
+#' * **`periode`:**  `periode` (kan være missing) 
+#' * **`regnskapsomfang`:** Korrigert versjon av input slik at den er angitt presist. 
+#' * **`integerInOutput`:** `TRUE` når `belop` i output skal omgøres til integer.
+#' * **`handleDuplicated`:**  Som input. 
 #' @export
 #'
 beredt = function(...){
@@ -20,7 +48,7 @@ beredt = function(...){
 #' @param data_saer data_saer 
 #' @param funksjonshierarki funksjonshierarki 
 #' @param artshierarki artshierarki 
-#' @param arts32 artshierarki_nettinger omgjort til hierarki som kan beregnes fra `data`
+#' @param arts32 artshierarki_nettinger omgjort til hierarki som kan beregnes fra `data_saer`
 #' @param arts41 artshierarki_nettinger_kasse omgjort til hierarki som kan beregnes fra `data`
 #' @param regioner regioner 
 #' @param kombinasjoner kombinasjoner 
