@@ -12,6 +12,7 @@ KostraRegnskap1(
   kombinasjoner = NULL,
   regioner = NULL,
   inputInOutput = NULL,
+  valueVar = "belop",
   ...
 )
 }

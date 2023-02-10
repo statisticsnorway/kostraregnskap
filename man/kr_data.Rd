@@ -5,10 +5,12 @@
 \alias{kr_data}
 \title{Return a data set}
 \usage{
-kr_data(dataset, path = NULL)
+kr_data(dataset, periode = NULL, path = NULL)
 }
 \arguments{
 \item{dataset}{Name of data set within the kostraregnskap package}
+
+\item{periode}{To specify \code{periode} (see examples)}
 
 \item{path}{When non-NULL the data set is read from "path/dataset.RData"}
 }
@@ -19,9 +21,24 @@ The data set
 Return a data set
 }
 \examples{
- z  <- kr_data("balanseRegnskapDataPen")
- z  <- kr_data("balanseRegnskapData")
- z  <- kr_data("kostraRegnskapDataPen")
- z  <- kr_data("kostraRegnskapData")
+z  <- kr_data("balanseRegnskapDataPen")
+z  <- kr_data("balanseRegnskapData")
+z  <- kr_data("kostraRegnskapDataPen")
+z  <- kr_data("kostraRegnskapData")
+
+aar <- 2015  # 2016 kan også velges 
+inputdata <- kr_data("data", aar)
+funksjonshierarki <- kr_data("funksjonshierarki", aar)
+artshierarki <- kr_data("artshierarki", aar)
+inputdata_saer <- kr_data("data_saer", aar)
+artshierarki_nettinger <- kr_data("artshierarki_nettinger", aar)
+artshierarki_nettinger_kasse <- kr_data("artshierarki_nettinger_kasse", aar)
+stjerne <- kr_data("stjernetabell", aar)
+formler <- kr_data("formler", aar)
+
+
+# bare aar 2016 fins i balansedata
+balansedata <- kr_data("balansedata")
+kapittelhierarki <- kr_data("kapittelhierarki")
 
 }

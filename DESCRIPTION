@@ -1,14 +1,15 @@
 Package: kostraregnskap
 Type: Package
-Title: kostraregnskap
-Version: 0.0.1
-Date: 2023-01-30
+Title: Regnskapsfunksjoner for Kostra
+Version: 0.0.2
+Date: 2023-02-10
 Author: Øyvind Langsrud
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
-Depends: R (>= 3.0.0), SSBtools, Matrix, stringr 
-Imports: utils
-Description: kostraregnskap
+Depends: R (>= 3.0.0), SSBtools (>= 1.4.1), Matrix (>= 1.5-2), stringr 
+Imports: utils, uuid
+Description: Regnskapsfunksjoner fra r-pakken Kostra og nye funksjoner med nye muligheter.  
 License: MIT + file LICENSE
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Suggests: 

@@ -64,8 +64,8 @@ KostraRegnskapEnPeriode(
   kontoklasser = NULL,
   regnskapsomfang = NULL,
   output = "en",
-  printInfo = TRUE,
-  printData = TRUE,
+  printInfo = FALSE,
+  printData = FALSE,
   lag0300 = FALSE,
   formler = NULL,
   autoNetting = TRUE,
@@ -75,7 +75,9 @@ KostraRegnskapEnPeriode(
   fixRegionkode = TRUE,
   fixArtkode = TRUE,
   fixFunksjonkode = TRUE,
-  autoFormel = TRUE
+  autoFormel = TRUE,
+  useC = any(c(grepl("C", regnskapsomfang))),
+  handleDuplicated = "sum"
 )
 }
 \arguments{
@@ -108,7 +110,9 @@ Ved "fire" blir output et datasett med fire beløpskolonner: kasse, særbedrift,
 Variantene med Factor gir outputdata med factor istedenfor character.
 Ved "hierarkier" returneres utflatede hierarkier.
 Sign for nettinghierarkiet er i kolonnen netting. Dette hierarkiet er omskrevet til å ta vanlige data som input.
-Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).}
+Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).
+Varianten \code{"beredt"} er ny (2023) den betyr at funksjonen bare gjøre forberedelsene før selve beregningene.
+Denne er det ikke mulig å kjøre via \code{KostraRegnskap} med flere perioder i input.}
 
 \item{stjernetabell}{tabell med *  og ? som definerer koder som skal med i output}
 
@@ -118,7 +122,8 @@ Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE
 
 \item{storkombinasjoner}{kombinasjoner av art, funksjon, kontoklasse og region}
 
-\item{regnskapsomfang}{regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.}
+\item{regnskapsomfang}{regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.
+Man kan også spesifisere \code{"C"} istedenfor \code{"B"} istedenfor.}
 
 \item{printInfo}{Ved TRUE printes informasjon om generering av kombinasjoner fra stjernetabell samt informasjon om omskriving av formler.}
 
@@ -133,7 +138,7 @@ Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE
 \item{returnFormelData}{Ved TRUE returneres spesielt datasett med informasjon om formelberegninger (denne parameteren vil bli tatt bort og erstattet av nye output koder som kan brukes)}
 
 \item{smartB}{Ved TRUE (default) og ved valg av ett regnskapsomfang velges en metode som sparer tid og minne.
- Istedenfor å plukke ut regnskapsomfang til slutt gjøres kun de beregninger som trengs.
+Istedenfor å plukke ut regnskapsomfang til slutt gjøres kun de beregninger som trengs.
 Spesielt ved valg av regnskapsomfang B kan data_saer og/eller artshierarki_nettinger sløyfes.}
 
 \item{fixRegionkode}{Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)}
@@ -144,6 +149,13 @@ Spesielt ved valg av regnskapsomfang B kan data_saer og/eller artshierarki_netti
 
 \item{autoFormel}{Ved TRUE (default) kan formlene avhenge av hverandre. Ved TRUE kan formlene avhenge av hverandre.
 Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.}
+
+\item{useC}{Ved TRUE: \code{"C"} istedenfor \code{"B"} i output.
+Default er \code{FALSE} med mindre \code{C} er med i inputparameter regnskapsomfang.
+Men man trenger altså ikke å bruke \code{useC}-parameteren hvis man bruker
+parameteren \code{regnskapsomfang} og tar med \code{"C"} der (se eksempler).}
+
+\item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.}
 }
 \value{
 En data frame

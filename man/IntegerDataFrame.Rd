@@ -19,3 +19,4 @@ data frame
 \description{
 Only done when the integer values are exact the same as the original values
 }
+\keyword{internal}

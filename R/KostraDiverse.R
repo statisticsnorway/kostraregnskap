@@ -31,6 +31,9 @@ RemoveDuplicated = function(x,cols,printAndWarning=TRUE){
 
 
 LagInteger = function(x){
+  if(!is.numeric(x)){
+    return(x)
+  }
   z = as.integer(x)
   if(identical( as.numeric(as.vector(z)),as.numeric(as.vector(x))))
     return(z)
@@ -49,6 +52,7 @@ LagInteger = function(x){
 #'
 #' @return None (invisible NULL)
 #' @export
+#' @keywords internal
 #'
 PrintHeadTail = function(x,n=2, title = NULL){
   cat("\n")

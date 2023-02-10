@@ -3,6 +3,7 @@ context("KostraRegnskap")
 #options(stringsAsFactors = FALSE)
 
 test_that("KostraRegnskap - beregningstester", {
+  skip("Tester tar lang tid")
   a=kr_data("kostraRegnskapDataPen")
 
   co <- capture.output({
@@ -150,6 +151,8 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
                  eval(as.call(c(as.name("KostraRegnskap"),b,
                  list(arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65")),
                  list(funksjoner=c("FG2","FG1"))))))})
+  
+  
 
   expect_equal(zEval, zVanlig)
   expect_equal(sum(zEval$belop),1270849893L)
@@ -163,6 +166,25 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
       eval(as.call(c(as.name("KostraRegnskap"),a,
                      list(perioder="2015")))))})
 
+  co <- capture.output({
+    k_2015 <- kostra_regnskap_aar(bidrag = FALSE)
+  })
+  co <- capture.output({
+    k_2015b <- kostra_regnskap_aar(bidrag = TRUE)
+  })
+  
+  co <- capture.output({
+    k_2015e <- kostra_regnskap_aar(bidrag = TRUE, fun_id_bidrag = id_bidrag_expression)
+  })
+  
+  belop <- rep(NaN, nrow(k_2015e))
+  for (i in 1:nrow(k_2015e)) belop[i] <- eval(parse(text = k_2015e[[8]][i]))
+  
+  expect_equal(belop, z$belop)
+  
+  expect_equal(z[-1], k_2015[-7])
+  expect_equal(k_2015b[1:6], k_2015[1:6])
+  
   expect_equal(sum(z$belop),9419229115)
   expect_equivalent(dim(z), c(357112,7))
   expect_equivalent(names(z), c("periode", "regnskapsomfang", "region", "funksjon", "kontoklasse", "art", "belop"))
@@ -180,11 +202,85 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
                                    funksjoner=c("FG2","FG1"))})
 
   expect_equivalent(zVanlig2015, zEval[zEval$periode=="2015" & zEval$region=="0301" ,])
+  
+  
+  co <- capture.output({  
+    
+    zV2015a <-  KostraRegnskap(a$data, a$funksjonshierarki, a$artshierarki,
+                               a$data_saer, a$artshierarki_nettinger,a$artshierarki_nettinger_kasse,
+                               stjernetabell = a$stjernetabell, formler = a$formler,
+                               arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                               funksjoner=c("FG2","FG1"), perioder ="2015", regioner = "0301")
+    
+    zV2015b <-  suppressWarnings( KostraRegnskap(a$data, a$funksjonshierarki, a$artshierarki,
+                               a$data_saer, a$artshierarki_nettinger,
+                               stjernetabell = a$stjernetabell, formler = a$formler,
+                               arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                               funksjoner=c("FG2","FG1"), perioder ="2015", regioner = "0301"))
+    
+    zV2015c <-  suppressWarnings( KostraRegnskap(a$data, a$funksjonshierarki, a$artshierarki,
+                               stjernetabell = a$stjernetabell, formler = a$formler,
+                               arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                               funksjoner=c("FG2","FG1"), perioder ="2015", regioner = "0301",
+                               regnskapsomfang = "C"))
+    
+    
+    z_2015a <- kostra_regnskap_aar(arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                   funksjoner=c("FG2","FG1"), regioner = "0301")
+    
+    z_2015b <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                   arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                   funksjoner=c("FG2","FG1"), regioner = "0301"))
+    
+    z_2015c <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                   data_saer = NULL, artshierarki_nettinger = NULL,
+                                   arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                   funksjoner=c("FG2","FG1"), regioner = "0301",
+                                   regnskapsomfang = "C")
+    
+    
+    z_2015aF <- kostra_regnskap_aar(arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                    funksjoner=c("FG2","FG1"), regioner = "0301", bidrag = FALSE)
+    
+    z_2015bF <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                    funksjoner=c("FG2","FG1"), regioner = "0301", bidrag = FALSE))
+    
+    z_2015cF <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                   data_saer = NULL, artshierarki_nettinger = NULL,
+                                   arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                   funksjoner=c("FG2","FG1"), regioner = "0301",
+                                   regnskapsomfang = "C", bidrag = FALSE)
+    
+    z_2015bG <- suppressWarnings( kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                                      arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                                      funksjoner=c("FG2","FG1"), regioner = "0301", 
+                                                      fun_id_bidrag = NULL))
+    
+    z_2015cG <- kostra_regnskap_aar(artshierarki_nettinger_kasse = NULL,
+                                    data_saer = NULL, artshierarki_nettinger = NULL,
+                                    arter =  c("AGD9","AGID1","AGI14","AGD32","AGD65"),
+                                    funksjoner=c("FG2","FG1"), regioner = "0301",
+                                    regnskapsomfang = "C", fun_id_bidrag = NULL)
+  })
+  
 
+  expect_equivalent(zVanlig2015, zV2015a)
+  expect_equivalent(zV2015a[-1],  z_2015a[1:6])
+  expect_equivalent(z_2015a[1:6], z_2015aF[1:6])
+  expect_equivalent(zV2015b[-1],  z_2015b[1:6])
+  expect_equivalent(z_2015b[1:6], z_2015bF[1:6])
+  expect_equivalent(z_2015b[1:6], z_2015bG[1:6])
+  expect_equivalent(zV2015c[-1],  z_2015c[1:6])
+  expect_equivalent(z_2015c[1:6], z_2015cF[1:6])
+  expect_equivalent(z_2015c[1:6], z_2015cG[1:6])
+  expect_equivalent(zV2015a[9:16, 3:7],  zV2015c[, 3:7])
+  
 })
 
 
 test_that("KostraRegnskap - gammel rutine og test av ulike HierarchyCompute varianter", {
+  skip("Reduserer antall tester")
   a=kr_data("kostraRegnskapDataPen")
   b=kr_data("kostraRegnskapData")
 

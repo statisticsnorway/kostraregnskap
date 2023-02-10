@@ -9,6 +9,7 @@
 #'
 #' @return Data frame where the "weights in weighted sum" is named as sign. Firs row (before stacking) contains the "results".
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' # Data and hierarchies used in the examples

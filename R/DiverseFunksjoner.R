@@ -11,6 +11,7 @@
 #'
 #' @return data frame
 #' @export
+#' @keywords internal
 #'
 IntegerDataFrame = function(x,makeWarning = FALSE, allNumeric =TRUE){
   #cat("\n [ IntegerDataFrame ...")
@@ -77,6 +78,7 @@ SelectAndRename = function(data, oldNames, newNames=NULL){
 #'
 #' @return character vector
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' CharacterReCode(rep(1:4,2),c("2","3"),c("B","C"))

@@ -23,3 +23,4 @@ CharacterReCode
 CharacterReCode(rep(1:4,2),c("2","3"),c("B","C"))
 
 }
+\keyword{internal}

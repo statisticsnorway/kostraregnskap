@@ -120,13 +120,18 @@ KostraRegnskap = function(data,funksjonshierarki,artshierarki,data_saer=NULL,
 }
 
 
-DataPeriode = function(data,periode,okNULL = FALSE){
+DataPeriode = function(data,periode,okNULL = FALSE, rm_periode = FALSE){
   if(is.null(data))
     return(NULL)
   if(okNULL)
     if(is.null(data$periode))
       return(data)
   rows = as.character(data$periode) == periode
+  
+  if(rm_periode){
+    data = data[names(data) != "periode"]
+  }
+  
   if(any(!rows))
     return(data[rows, ,drop=FALSE])
   data
@@ -186,10 +191,13 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #'              Ved "hierarkier" returneres utflatede hierarkier.
 #'              Sign for nettinghierarkiet er i kolonnen netting. Dette hierarkiet er omskrevet til å ta vanlige data som input.
 #'              Ved "barePrintData" stopper funksjonen etter at input er printet (printData=TRUE).
+#'              Varianten `"beredt"` er ny (2023) den betyr at funksjonen bare gjøre forberedelsene før selve beregningene.  
+#'              Denne er det ikke mulig å kjøre via `KostraRegnskap` med flere perioder i input. 
 #' @param funksjoner funksjoner som skal med i output. Man kan også bruke  *, ?, ! og – tilsvarende som for regioner (se nedenfor).
 #' @param arter arter som skal med i output. Man kan også bruke  *, ?, ! og – tilsvarende som for regioner (se nedenfor).
 #' @param kontoklasser kontoklasser som skal med i output. Det er mulig å bruke * istedenfor NULL til å velge alle kontoklosser.
 #' @param regnskapsomfang regnskapsomfang som skal med i output. Det er mulig å bruke * og ? istedenfor NULL til å velge begge regnskapsomfang.
+#'                        Man kan også spesifisere `"C"` istedenfor `"B"` istedenfor.
 #' @param printInfo Ved TRUE printes informasjon om generering av kombinasjoner fra stjernetabell samt informasjon om omskriving av formler.
 #' @param printData Ved TRUE printes to første og to siste rader av alle inputdataene
 #' @param lag0300 Ved TRUE kopieres region 0301 til 0300 i inputdata
@@ -205,6 +213,11 @@ Fgrepl = function(pattern, x){  # grepl with fixed = TRUE
 #' @param fixFunksjonkode Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at funksjonskoder som er tall får 3 plasser og ledende nuller (gir warning ved endring av input)
 #' @param autoFormel Ved TRUE (default) kan formlene avhenge av hverandre. Ved TRUE kan formlene avhenge av hverandre.
 #'                   Formlene vil bli korrigert ved hjelp av funksjonen \code{\link{AutoFormel}}.
+#' @param useC  Ved TRUE: `"C"` istedenfor `"B"` i output. 
+#'              Default er `FALSE` med mindre `C` er med i inputparameter regnskapsomfang.
+#'        Men man trenger altså ikke å bruke `useC`-parameteren hvis man bruker 
+#'        parameteren `regnskapsomfang` og tar med `"C"` der (se eksempler).
+#' @param handleDuplicated Parameter til \code{\link{HierarchyCompute}}.       
 #'
 #' @return En data frame
 #' @export
@@ -336,8 +349,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                           kontoklasser = NULL,
                           regnskapsomfang = NULL,
                           output="en",
-                          printInfo = TRUE,
-                          printData = TRUE,
+                          printInfo = FALSE,
+                          printData = FALSE,
                           lag0300 = FALSE,
                           formler = NULL,
                           autoNetting = TRUE,
@@ -347,7 +360,9 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                           fixRegionkode = TRUE,
                           fixArtkode = TRUE,
                           fixFunksjonkode = TRUE,
-                          autoFormel = TRUE
+                          autoFormel = TRUE,
+                          useC = any(c(grepl("C", regnskapsomfang))),
+                          handleDuplicated = "sum"
 ){
   #  Denne koden er resultat av utvikling over tid i en prosess der hva som skulle gjøres ble bestemt i iterasjon med
   #  fagseksjon.
@@ -370,6 +385,14 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
   #  Utvikling av beregningstester var noe som ble gjort senere. Hvordan disse skulle være var også i en prosess i
   #  iterasjon med fag. At beregningstestene kan håndtere formler gjør dette ekstra avansert. Det var behov for ny kode
   #  inni hovedfunksjonen for å ta ut akkurat det som var ønskelig.
+  
+  if(output == "beredt"){
+    return_beredt = TRUE
+    output = "matrixComponents" # Nesten samme som "matrixComponents", men stopper tidligere 
+  } else {
+    return_beredt = FALSE
+  }
+  
 
   AddLeadingZeros <-  function(codes, ...){
     if (!is.character(codes)) {
@@ -399,7 +422,15 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     else
       print(as.matrix(formler,rownames=TRUE),quote=FALSE) # Printer alle og dessuten på en penere måte
   }
-
+  
+  if (useC) {
+    if (!is.null(regnskapsomfang)) {
+      regnskapsomfang <- gsub("C", "B", regnskapsomfang)
+    }
+    BC <- "C"
+  } else {
+    BC <- "B"
+  }
 
   warningTextRegionskoder = "Regionskoder endret"
   warningTextArtskoder = "Artskoder endret"
@@ -665,8 +696,10 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
                      as.character(artshierarki_nettinger_kasse$periode),
                      as.character(artshierarki_nettinger$periode)))
 
-  if(length(periode) == 0)
-    stop("periode finnes ikke i input")
+  if(length(periode) == 0){
+    # stop("periode finnes ikke i input")
+    periode <- NA_character_
+  }
   if(length(periode) > 1)
     stop(paste("periode er ikke unik:",paste(periode,collapse=", ")))
 
@@ -749,8 +782,10 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     isnk = !is.null(artshierarki_nettinger_kasse)
 
-    if(!isnk){
-      warning("artshierarki_nettinger_kasse er ikke i input. Alle kasse-nettinger blir 0.")
+    if(!isnk){  
+      if(!onlyB){
+        warning("artshierarki_nettinger_kasse er ikke i input. Alle kasse-nettinger blir 0.")
+      }
     } else {
 
       #if(autoNetting)
@@ -1052,8 +1087,9 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     if(isNullSum==2)
       rm(storkombinasjoner) # trengs ikke mer
     else{
-      if(useMatrixToDataFrame)
+      if(useMatrixToDataFrame & !return_beredt){
         storkombinasjoner = DataFrameToMatrix(storkombinasjoner)
+      }
     }
 
   }
@@ -1098,13 +1134,17 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
 
   if(isNullSum==2){
+    if(return_beredt){
+      stop("Ikke implementert ved return_beredt")
+    }
 
     if(output == "hierarkier"){
 
       w = KostraRegnskap1(data,funksjonshierarki,artshierarki,
                           regioner=regioner,kombinasjoner=kombinasjoner,
                           inputInOutput=FALSE,output="dummyHierarchies",
-                          useMatrixToDataFrame = useMatrixToDataFrame )
+                          useMatrixToDataFrame = useMatrixToDataFrame, 
+                          handleDuplicated = handleDuplicated)
 
       hdf = HierarchyFromDummy(w$art)
       hdf$hierarki = "art"
@@ -1117,7 +1157,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     w = KostraRegnskap1(data,funksjonshierarki,artshierarki,
                         regioner=regioner,kombinasjoner=kombinasjoner,
-                        output="data.frame", useMatrixToDataFrame = useMatrixToDataFrame )
+                        output="data.frame", useMatrixToDataFrame = useMatrixToDataFrame,
+                        handleDuplicated = handleDuplicated)
 
     if(integerInOutput)
       w$belop = LagInteger(w$belop)
@@ -1216,7 +1257,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
   kombinasjonerIinput = !is.null(kombinasjoner)
   if(!kombinasjonerIinput)  # Lager "tulle"-kombinsjoner i første omgang siden første rad blir brukt nedenfor
     kombinasjoner =  KostraRegnskap1(data[1,],funksjonshierarki[1, ,drop=FALSE],artshierarki[1, ,drop=FALSE],regioner=unique(data_saer$region)[1],inputInOutput=TRUE,output="crossCode",
-                                     useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )
+                                     useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)
 
 
   if(isnk){
@@ -1437,25 +1478,25 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
   if(isnk)
     mat1H <- KostraRegnskap1(artkomb1,funksjonshierarki[1, ,drop=FALSE] ,artshierarki,inputInOutput=TRUE,output="dummyHierarchies",
-                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$art
+                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$art
 
 
 
   mat2H <- KostraRegnskap1(artkomb2,funksjonshierarki[1, ,drop=FALSE] ,artshierarki,inputInOutput=TRUE,output="dummyHierarchies",
-                           useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$art
+                           useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$art
 
 
   mat3H <- KostraRegnskap1(artkomb3,funksjonshierarki[1, ,drop=FALSE],artshierarki_nettinger,inputInOutput=FALSE,output="dummyHierarchies",
-                           useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$art  # dvs mat3a
+                           useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$art  # dvs mat3a
   if(isnk)
     mat4H <- KostraRegnskap1(artkomb4,funksjonshierarki[1, ,drop=FALSE],artshierarki_nettinger_kasse,inputInOutput=FALSE,output="dummyHierarchies",
-                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$art  # dvs mat3a
+                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$art  # dvs mat3a
 
 
 
   if(ikkeendring0404)
     mat3H <- KostraRegnskap1(artkomb3,funksjonshierarki[1, ,drop=FALSE],artshierarki_nettinger,inputInOutput=TRUE,output="dummyHierarchies",
-                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$art  # dvs mat3a
+                             useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$art  # dvs mat3a
 
 
   nam = colnames(mat3H)[colnames(mat3H) %in% rownames(mat2H)]  # "EnKodeSoMiKkEfiNneS" tas bort
@@ -1520,7 +1561,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
       artNett  = HierarchyFromDummy(mat32),
       artNettKasse  = HierarchyFromDummy(mat41),
       fun = HierarchyFromDummy(KostraRegnskap1(artkomb2,funksjonshierarki ,artshierarki[1, ,drop=FALSE],inputInOutput=FALSE,output="dummyHierarchies",
-                                               useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE )$funksjon)))
+                                               useMatrixToDataFrame = useMatrixToDataFrame, colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$funksjon)))
   }
 
 
@@ -1557,7 +1598,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     hdf$hierarki = "art"
 
     hd2 = HierarchyFromDummy(KostraRegnskap1(artkomb2,funksjonshierarki ,artshierarki[1, ,drop=FALSE],inputInOutput=FALSE,output="dummyHierarchies",
-                                             useMatrixToDataFrame = useMatrixToDataFrame , colNotInDataWarning = FALSE)$funksjon)
+                                             useMatrixToDataFrame = useMatrixToDataFrame , colNotInDataWarning = FALSE, handleDuplicated = handleDuplicated)$funksjon)
 
     hd2$netting = as.integer(NA)
     hd2$hierarki = "funksjon"
@@ -1575,31 +1616,71 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
   if(returnMatrixComponents|beregningInput){
 
-
-    if(!onlyB)
+    if(!onlyB){
       rowsInputArt = kombinasjoner$art %in% unique(c(unique(data$art),unique(data_saer$art)))
+    } else {
+      rowsInputArt = NULL
+    }
+    
+    if(return_beredt){
+      if (onlyB) {
+        data_saer <- NULL
+        arts32 <- NULL
+      }
+      if(!isnk){
+        arts41 = NULL
+      }
+      if (!is.null(regnskapsomfanger)) {
+        if (regnskapsomfanger == "A") {
+          regnskapsomfang <- "A"
+        }
+        if (regnskapsomfanger == "B") {
+          regnskapsomfang <- BC
+        }
+        
+      } else {
+        regnskapsomfang <- c("A", BC)
+      }
+      return((list(data = data,
+                   data_saer = data_saer,
+                   funksjonshierarki = funksjonshierarki,
+                   artshierarki = artshierarki,
+                   arts32 = arts32,
+                   arts41 = arts41,
+                   regioner = regioner,
+                   kombinasjoner = kombinasjoner,
+                   storkombinasjoner = storkombinasjoner,
+                   storkOrder = storkOrder,
+                   formler =formler,
+                   rowsInputArt = rowsInputArt,
+                   periode=periode,
+                   regnskapsomfang = regnskapsomfang,
+                   integerInOutput = integerInOutput, 
+                   handleDuplicated = handleDuplicated
+      )))
+    }
 
 
     #a1pluss2  <- KostraRegnskap1(data_saer,funksjonshierarki,artsDiff,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents",colNotInDataWarning=FALSE,
     #                            useMatrixToDataFrame = useMatrixToDataFrame )
 
     a1 <- KostraRegnskap1(data,funksjonshierarki,artshierarki,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents",
-                          useMatrixToDataFrame = useMatrixToDataFrame )
+                          useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
     if(!onlyB){
     a2 <- KostraRegnskap1(data_saer,funksjonshierarki,artshierarki,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents", colNotInDataWarning=FALSE,
-                          useMatrixToDataFrame = useMatrixToDataFrame )
+                          useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
 
     a3 <- KostraRegnskap1(data_saer,funksjonshierarki,arts32,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents",colNotInDataWarning=FALSE,
-                          useMatrixToDataFrame = useMatrixToDataFrame )
+                          useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
     if(any(rowsInputArt))
       a3$dataDummyHierarchy[rowsInputArt, ] <- 0
 
     if(isnk){
       a4 <- KostraRegnskap1(data,     funksjonshierarki,arts41,regioner=regioner,kombinasjoner=kombinasjoner,output="matrixComponents",colNotInDataWarning=FALSE,
-                            useMatrixToDataFrame = useMatrixToDataFrame )
+                            useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
       if(any(rowsInputArt))
        a4$dataDummyHierarchy[rowsInputArt, ] <- 0
@@ -1646,14 +1727,14 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     if(is.null(kombinasjoner)){ # Etter endring er kombinasjoner her aldri null, men lar koden stå
 
       mat1AndCrossCode <- KostraRegnskap1(data,funksjonshierarki,artshierarki,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrixWithCrossCode",
-                                          useMatrixToDataFrame = useMatrixToDataFrame )
+                                          useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
       mat1 = mat1AndCrossCode[[1]]
       kombinasjoner = CharacterDataFrame(mat1AndCrossCode[[2]])
       mat1AndCrossCode = NULL
     } else
       mat1 <- KostraRegnskap1(data,funksjonshierarki,artshierarki,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",
-                              useMatrixToDataFrame = useMatrixToDataFrame )
+                              useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
 
 
@@ -1670,14 +1751,14 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
       cat("\n     Saerbedrift + Nettinger: ")
       flush.console()
       matDiff  <- KostraRegnskap1(data_saer,funksjonshierarki,artsDiff,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",colNotInDataWarning=FALSE,
-                                  useMatrixToDataFrame = useMatrixToDataFrame )
+                                  useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
       if(isnk){
         cat("\n             Kasse-nettinger: ")
         flush.console()
 
         mat4 <- KostraRegnskap1(data,funksjonshierarki,arts41,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",colNotInDataWarning=FALSE,
-                                useMatrixToDataFrame = useMatrixToDataFrame )
+                                useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
         if(any(rowsInputArt))
           mat4[rowsInputArt, ] <- 0
 
@@ -1698,13 +1779,13 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     if(is.null(kombinasjoner)){ # Etter endring er kombinasjoner her aldri null, men lar koden stå
       matDiffAndCrossCode <- KostraRegnskap1(data_saer,funksjonshierarki,artsDiff,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrixWithCrossCode",colNotInDataWarning=FALSE,
-                                             useMatrixToDataFrame = useMatrixToDataFrame )
+                                             useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
       matDiff = matDiffAndCrossCode[[1]]
       kombinasjoner = CharacterDataFrame(matDiffAndCrossCode[[2]])
       matDiffAndCrossCode = NULL
     } else
       matDiff  <- KostraRegnskap1(data_saer,funksjonshierarki,artsDiff,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",colNotInDataWarning=FALSE,
-                                  useMatrixToDataFrame = useMatrixToDataFrame )
+                                  useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
     rowsInputArt = kombinasjoner$art %in% unique(c(unique(data$art),unique(data_saer$art)))
 
@@ -1713,7 +1794,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     flush.console()
 
     mat1 <- KostraRegnskap1(data,funksjonshierarki,artshierarki,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",
-                            useMatrixToDataFrame = useMatrixToDataFrame )
+                            useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
 
     if(isnk){
@@ -1721,7 +1802,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
       flush.console()
 
       mat4 <- KostraRegnskap1(data,funksjonshierarki,arts41,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",colNotInDataWarning=FALSE,
-                              useMatrixToDataFrame = useMatrixToDataFrame )
+                              useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
       if(any(rowsInputArt))
         mat4[rowsInputArt, ] <- 0
@@ -1747,7 +1828,7 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
     #  Den trengs ikke å beregnes direkte
     #  Dessuten er den indirekte bedre hvis det mangle i hierakitabell ..... se slack-diskusjon ... gamle data ..
     mat3 <- KostraRegnskap1(data_saer,funksjonshierarki,arts32,regioner=regioner,kombinasjoner=kombinasjoner,output="outputMatrix",colNotInDataWarning=FALSE,
-                            useMatrixToDataFrame = useMatrixToDataFrame )
+                            useMatrixToDataFrame = useMatrixToDataFrame, handleDuplicated = handleDuplicated)
 
     if(any(rowsInputArt))
       mat3[rowsInputArt, ] <- 0
@@ -1800,12 +1881,12 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
       }
       if(regnskapsomfanger=="B"){
         z=data.frame(a=as.vector(as.vector(as.matrix(mat1))),stringsAsFactors=stringsAsFactors)
-        regnskapsomfang =  data.frame(a=rep(c("B"), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
+        regnskapsomfang =  data.frame(a=rep(c(BC), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
       }
 
     } else{
       z=data.frame(a=as.vector(c(as.vector(as.matrix(matDiff+mat1)),as.vector(as.matrix(mat1)))),stringsAsFactors=stringsAsFactors)
-      regnskapsomfang =  data.frame(a=rep(c("A","B"), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
+      regnskapsomfang =  data.frame(a=rep(c("A",BC), times = 1, each = cumprod(dim(mat1))[2]  ),stringsAsFactors=stringsAsFactors)
     }
     names(z) = valueVar
 
@@ -1980,7 +2061,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
       if(!is.null(formler)){
         fk = FormelKorreksjoner(formler$formel,storkombinasjoner,data, funksjonshierarki, artshierarki, data_saer,
-                                artshierarki_nettinger, artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData)
+                                artshierarki_nettinger, artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData, 
+                                handleDuplicated = handleDuplicated)
         if(returnFormelData)
           return(fk)
 
@@ -2077,7 +2159,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
     if(!is.null(formler)){
       fk = FormelKorreksjoner(formler$formel,storkombinasjoner,data, funksjonshierarki, artshierarki, data_saer,
-                              artshierarki_nettinger, artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData)
+                              artshierarki_nettinger, artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData, 
+                              handleDuplicated = handleDuplicated)
       if(returnFormelData)
         return(fk)
       for(i in seq_len(length(fk$nyedata)))
@@ -2106,7 +2189,8 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 
   if(!is.null(formler)){
     fk = FormelKorreksjoner(formler$formel,w,data, funksjonshierarki, artshierarki, data_saer,
-                            artshierarki_nettinger,artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData)
+                            artshierarki_nettinger,artshierarki_nettinger_kasse,regioner, returnFormelData, rader0warning, printData,
+                            handleDuplicated = handleDuplicated)
     if(returnFormelData)
       return(fk)
     for(i in seq_len(length(fk$nyedata)))
@@ -2146,11 +2230,16 @@ KostraRegnskapEnPeriode = function(data,funksjonshierarki,artshierarki,data_saer
 #' @export
 #' @keywords internal
 #'
-KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NULL,regioner=NULL,inputInOutput=NULL, ...){
+KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NULL,regioner=NULL,inputInOutput=NULL, valueVar = "belop", ...){
 
   periode = unique(c(as.character(data$periode),
                      as.character(funksjonshierarki$periode),
                      as.character(artshierarki$periode)))
+  
+  if (length(periode) == 0) {
+    periode <- NA_character_
+  }
+  
   if(length(periode) != 1)
     stop("Ikke unik periode")
 
@@ -2166,7 +2255,7 @@ KostraRegnskap1 = function(data,funksjonshierarki,artshierarki,kombinasjoner=NUL
 
   HierarchyCompute(data=data,
                    hierarchies=hierarkier,
-                   valueVar = "belop",
+                   valueVar = valueVar,
                    rowSelect = kombinasjoner,
                    colSelect = regioner,
                    autoLevel = TRUE,

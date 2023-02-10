@@ -45,7 +45,7 @@ En data frame
 }
 \description{
 Funksjonen generaliserer summering ved \code{\link{aggregate}} til
- å bruke hierarki istedenfor en variabel (kostragruppe) i datasettet
+å bruke hierarki istedenfor en variabel (kostragruppe) i datasettet
 }
 \details{
 Parameteren \code{slettOutput0} har mening i tillegg til \code{slettInput0} dersom det er negative fortegn i hierarki slik at 0-er kan oppnås ved differanser.
