@@ -74,6 +74,7 @@ balanse_regnskap <- function(data,kapittelhierarki,
                                     printData = FALSE,
                                     lag0300 = FALSE,
                                     fixRegionkode = TRUE,
+                             handleDuplicated = "stop",
                              bidrag = TRUE,
                              generer_id = TRUE,
                              bidrag_var = "source",
@@ -85,6 +86,11 @@ balanse_regnskap <- function(data,kapittelhierarki,
   if (output != "standard") {
     bidrag <- FALSE
     generer_id <- FALSE
+  }
+  if (bidrag) {
+    if(handleDuplicated != "stop"){
+      stop('Bare handleDuplicated="stop" mulig når bidrag=TRUE')
+    }
   }
   
   StopOrWarning = stop
@@ -445,7 +451,8 @@ balanse_regnskap <- function(data,kapittelhierarki,
                        constantsInOutput = constantsInOutput,
                        hierarchyVarNames=c(mapsFrom="from", mapsTo ="to", sign="sign", level="level"),
                        inputInOutput=TRUE,
-                       output=output1)
+                       output=output1, 
+                       handleDuplicated = handleDuplicated)
   
   bidragB <- NULL
   if (bidrag) {

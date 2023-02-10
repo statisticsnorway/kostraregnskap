@@ -41,7 +41,8 @@ BalanseRegnskapEnPeriode(
   output = "en",
   printData = TRUE,
   lag0300 = FALSE,
-  fixRegionkode = TRUE
+  fixRegionkode = TRUE,
+  handleDuplicated = "sum"
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ BalanseRegnskapEnPeriode(
 \item{lag0300}{Ved TRUE kopieres region 0301 til 0300 i inputdata}
 
 \item{fixRegionkode}{Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)}
+
+\item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.}
 }
 \value{
 Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input

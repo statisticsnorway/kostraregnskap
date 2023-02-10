@@ -17,6 +17,7 @@ balanse_regnskap(
   printData = FALSE,
   lag0300 = FALSE,
   fixRegionkode = TRUE,
+  handleDuplicated = "stop",
   bidrag = TRUE,
   generer_id = TRUE,
   bidrag_var = "source",
@@ -48,6 +49,9 @@ være som resultatet fra den gamle \code{\link{BalanseRegnskapEnPeriode}}.}
 \item{lag0300}{Ved TRUE kopieres region 0301 til 0300 i inputdata}
 
 \item{fixRegionkode}{Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)}
+
+\item{handleDuplicated}{Parameter til \code{\link{HierarchyCompute}}.
+Bare \code{"stop"} mulig  når \code{bidrag = TRUE}.}
 
 \item{bidrag}{Ved \code{TRUE} vil det genereres tekststreng
 med funksjonen spesifisert med parameteren \code{fun_id_bidrag}.}

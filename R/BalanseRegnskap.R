@@ -100,6 +100,7 @@ BalanseRegnskap = function(data,kapittelhierarki,
 #' 
 #' @inheritParams balanse_regnskap
 #' @param output kode for type output som (brukes av BalanseRegnskapBeregningHierarki og BalanseRegnskapBeregningInput)
+#' @param handleDuplicated Parameter til \code{\link{HierarchyCompute}}. 
 #'
 #' @return Data frame med samme variabler som data i input og med kapitler/regnskapsomfang i henhold til annen input
 #' @export
@@ -132,8 +133,8 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
                           output="en",
                           printData = TRUE,
                           lag0300 = FALSE,
-                          fixRegionkode = TRUE
-){
+                          fixRegionkode = TRUE,
+                          handleDuplicated = "sum"){
   balanse_regnskap(data = data,
                    kapittelhierarki = kapittelhierarki,
                    kombinasjoner =  kombinasjoner,
@@ -144,7 +145,8 @@ BalanseRegnskapEnPeriode = function(data,kapittelhierarki,
                    output = output,
                    printData = printData,
                    lag0300 = lag0300,
-                   fixRegionkode = fixRegionkode)
+                   fixRegionkode = fixRegionkode,
+                   handleDuplicated = handleDuplicated)
 }
 
 
