@@ -43,3 +43,4 @@ Korrigeringer av input handler om endring i henhold til
 Bruk av av \code{lag0300} kan også tenkes.
 Se \code{\link{KostraRegnskapEnPeriode}}.
 }
+\keyword{internal}

@@ -13,6 +13,7 @@
 #'
 #' @return Vektor med multippel `id_bidrag`-output
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' # Genererer input

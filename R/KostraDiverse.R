@@ -52,6 +52,7 @@ LagInteger = function(x){
 #'
 #' @return None (invisible NULL)
 #' @export
+#' @keywords internal
 #'
 PrintHeadTail = function(x,n=2, title = NULL){
   cat("\n")

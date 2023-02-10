@@ -45,3 +45,4 @@ a <- HierarchyCompute(x, list(age = ageHier, geo = geoHier, year = "rowFactor"),
 MultiRowHierarchyComputations(a)
 
 }
+\keyword{internal}

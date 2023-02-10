@@ -44,3 +44,4 @@ SingleRowHierarchyComputations(a)
 
 SingleRowHierarchyComputations(a, TRUE)
 }
+\keyword{internal}

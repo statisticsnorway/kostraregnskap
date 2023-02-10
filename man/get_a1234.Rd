@@ -52,3 +52,4 @@ Fire sett \code{HierarchyCompute}-output ved bruk av \code{output = "matrixCompo
 \description{
 Med input fra \code{\link{beredt}}-output
 }
+\keyword{internal}

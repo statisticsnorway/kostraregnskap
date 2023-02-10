@@ -18,6 +18,7 @@
 #' @return En vanlig matrise
 #' @export
 #' @importFrom SSBtools dummy_aggregate
+#' @keywords internal
 #'
 #' @examples
 #' # Genererer input

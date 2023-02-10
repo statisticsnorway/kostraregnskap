@@ -19,3 +19,4 @@ Korrigert versjon av input \code{a}
 \description{
 Formel-korreksjon av sett av matrisekomponenter
 }
+\keyword{internal}

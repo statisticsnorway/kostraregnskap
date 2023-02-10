@@ -64,3 +64,4 @@ id_bidrag_matrix(sign_matrix[2:3, c(1, 6)], ind_matrix[4:5, c(1, 3)], df, fun_be
 id_bidrag_matrix(sign_Matrix[2:3, c(1, 6)], ind_matrix[4:5, c(1, 3)], df)
 
 }
+\keyword{internal}

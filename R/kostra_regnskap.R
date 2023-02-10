@@ -33,6 +33,7 @@
 #' * **`integerInOutput`:** `TRUE` når `belop` i output skal omgøres til integer.
 #' * **`handleDuplicated`:**  Som input. 
 #' @export
+#' @keywords internal
 #'
 beredt = function(...){
   KostraRegnskapEnPeriode(..., output = "beredt")
@@ -61,6 +62,7 @@ beredt = function(...){
 #'
 #' @return Fire sett `HierarchyCompute`-output ved bruk av `output = "matrixComponents"`
 #' @export
+#' @keywords internal
 #'
 get_a1234 <- function(data, data_saer = NULL, funksjonshierarki, artshierarki, 
                       arts32 = NULL, arts41 = NULL, regioner, 
@@ -122,6 +124,7 @@ get_a1234 <- function(data, data_saer = NULL, funksjonshierarki, artshierarki,
 #'
 #' @return matrisekomponenter
 #' @export
+#' @keywords internal
 #'
 sum_netting <- function(aij) {
   if (is.null(aij[[2]])) {
@@ -148,6 +151,7 @@ sum_netting <- function(aij) {
 #'
 #' @return Korrigert versjon av input `a`
 #' @export
+#' @keywords internal
 #'
 formel_korreksjon <- function(a, af, fm) {
   id <- Match(fm$codesLeft, a[[1]]$toCrossCode)

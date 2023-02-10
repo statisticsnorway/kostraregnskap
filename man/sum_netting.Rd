@@ -15,3 +15,4 @@ matrisekomponenter
 \description{
 Når det bare er summen av hierarki og nettinghierarki for samme datainput som skal brukes til slutt, er det fordelaktig å slå disse sammen.
 }
+\keyword{internal}
