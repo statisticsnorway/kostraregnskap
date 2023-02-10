@@ -171,6 +171,34 @@ formel_korreksjon <- function(a, af, fm) {
 
 
 
+#' Sammenstilling av output til en data-frame 
+#' 
+#' Sammenstilling av output til en data-frame og generering av UUID
+#' 
+#' Utgangspunktet for funksjonen er gammel kode fra \code{\link{KostraRegnskap}}.
+#' Koden ble skrevet for å være gjerrig på minnebruk.
+#' Dette har gått på bekostning av enkelhet. 
+#' Egentlig er ikke det som foregår i denne funksjonen særlig avansert. 
+#' Det settes bare sammen tall/tekst fra ulike typer input. I tillegg genereres UUID.   
+#'
+#' @inheritParams kostra_regnskap
+#' @param matA  matrise med belop-output for regnskapsomfang A
+#' @param matB  matrise med belop-output for regnskapsomfang B
+#' @param periode `NULL` eller periode som skal med i output
+#' @param regnskapsomfang `regnskapsomfang`
+#' @param value_var `= "belop"`
+#' @param kombinasjoner `kombinasjoner`
+#' @param storkOrder Indekser som brukes når endelig output skal lages for å passe med `storkombinasjoner`
+#' @param storkombinasjoner `storkombinasjoner`
+#' @param colVar `= "region"`
+#' @param integerInOutput `TRUE` når `belop` i output skal omgøres til integer
+#' @param bidragA `NULL` eller matrise med generert tekst for regnskapsomfang A 
+#' @param bidragB `NULL` eller matrise med generert tekst for regnskapsomfang A
+#'
+#' @return Som output fra \code{\link{kostra_regnskap}}
+#' @export
+#' @keywords internal
+#'
 regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, value_var = "belop", kombinasjoner,  storkOrder = NULL, 
                                storkombinasjoner = NULL,  colVar="region", integerInOutput, bidragA, bidragB, 
                                bidrag_var = "source", id_var = "UUID", 
