@@ -215,7 +215,7 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
       }
       regnskapsomfang =  data.frame(a=rep(regnskapsomfanger, times = 1, each = cumprod(dim(matA))[2]  ),stringsAsFactors=stringsAsFactors)
     } else {
-      if(is.null(bidragA)){
+      if(is.null(bidragB)){
         z=data.frame(a=as.vector(as.vector(as.matrix(matB))))
       } else {
         z=data.frame(a=as.vector(as.vector(as.matrix(matB))),  bidrag=as.vector(as.vector(as.matrix(bidragB))))
@@ -225,7 +225,7 @@ regnskap_from_matrix <- function(matA, matB, periode, regnskapsomfang = NULL, va
     
   } else{
     if(length(regnskapsomfanger) != 2){
-      stop("galt antall regnskapsomfan")
+      stop("galt antall regnskapsomfang")
     } 
     if(is.null(bidragA)){
       z=data.frame(a=as.vector(c(as.vector(as.matrix(matA)),as.vector(as.matrix(matB)))))
