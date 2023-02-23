@@ -182,6 +182,18 @@ test_that("KostraRegnskap - Vanlig beregning og sjekk av kodefix og at eval(as.c
   
   expect_equal(belop, z$belop)
   
+  co <- capture.output({
+    k_2015f <- kostra_regnskap_aar(data_saer = NULL, 
+                                   artshierarki_nettinger = NULL, 
+                                   artshierarki_nettinger_kasse = NULL,
+                                   regnskapsomfang = "C",
+                                   bidrag = TRUE, fun_id_bidrag = id_bidrag_expression)
+  })
+  belop <- rep(NaN, nrow(k_2015f))
+  for (i in 1:nrow(k_2015f)) belop[i] <- eval(parse(text = k_2015f[[8]][i]))
+  expect_equal(belop, k_2015f$belop)
+
+  
   expect_equal(z[-1], k_2015[-7])
   expect_equal(k_2015b[1:6], k_2015[1:6])
   
