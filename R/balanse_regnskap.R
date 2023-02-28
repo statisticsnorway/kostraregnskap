@@ -24,6 +24,11 @@
 #' @param omfang  regnskapsomfang som skal med i output
 #' @param output Dersom annet enn `"standard"` spesifiseres vil resultatet som returneres 
 #'               være som resultatet fra den gamle \code{\link{BalanseRegnskapEnPeriode}}. 
+#' @param omfang_fra_input
+#'          Ved `FALSE` benyttes kodene `"B"`, `"sbedr"` og `"lanefond"`.  
+#'          Ved `TRUE` (default) benyttes alle kodene for regnskapsomfang som finnes i inputdata. 
+#'          Disse kodene kan etterspørres med parameteren `omfang`.  
+#'          I output blir `"A"` summen av alle inputkoder. I utgangspunktet er dette laget for å bruke `"C"` istedenfor `"B"`.         
 #' @param printData Ved TRUE printes to første og to siste rader av alle inputdataene
 #' @param lag0300 Ved TRUE kopieres region 0301 til 0300 i inputdata
 #' @param fixRegionkode Ved TRUE (default): Sørger for blanke i starten/slutten fjernes og at regionkoder får 4 eller 6 plasser og ledende nuller (gir warning ved endring av input)
@@ -49,21 +54,27 @@
 #'                           SSBtools::Number(seq_len(nrow(inputdata)), 13))
 #'
 #' z1 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
-#' z1[36:41, ]
+#' z1[37:41, ]
 #' 
 #' z2 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
 #'                        fun_id_bidrag = id_bidrag2, generer_id = FALSE)
-#' z2[36:41, ]
+#' z2[37:41, ]
 #' 
 #' z3 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
 #'                        bidrag = FALSE)
-#' z3[36:41, ] 
+#' z3[37:41, ] 
 #' 
 #' z4 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
 #'                        omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
 #'                        bidrag = FALSE, generer_id = FALSE)
 #' z4 
 #' 
+#' dataC <- inputdata 
+#' dataC$regnskapsomfang[dataC$regnskapsomfang == "B"] <- "C"
+#' z5 <- balanse_regnskap(dataC, hierarki, regioner = c("2021", "2022", "0301"),
+#'                        omfang = c("C", "A" ), kapitler = c("KG3", "KG2"),
+#'                        bidrag = FALSE, generer_id = FALSE)
+#' z5 
 balanse_regnskap <- function(data,kapittelhierarki,
                                     kombinasjoner=NULL,
                                     regioner=NULL,
@@ -71,6 +82,7 @@ balanse_regnskap <- function(data,kapittelhierarki,
                                     kapitler  = NULL,
                                     omfang = NULL,
                                     output = "standard",
+                                    omfang_fra_input =  output == "standard",
                                     printData = FALSE,
                                     lag0300 = FALSE,
                                     fixRegionkode = TRUE,
@@ -171,7 +183,11 @@ balanse_regnskap <- function(data,kapittelhierarki,
   
   
   ####omfangAll  = unique(data$regnskapsomfang)#### Hardkoder isteden  siden beregnigstest kan feile hvis alle ikke er med
-  omfangAll  =  c("B","sbedr","lanefond")    # A skal ikke med her.
+  if (omfang_fra_input) {
+    omfangAll <- sort(unique(data$regnskapsomfang))
+  } else {
+    omfangAll <- c("B", "sbedr", "lanefond")  # A skal ikke med her.
+  }
   omfangshierarki <- kapittelhierarki[rep(1,length(omfangAll)),c("to","from","sign"),drop=FALSE]
   omfangshierarki$to = "A"
   omfangshierarki$from = omfangAll
