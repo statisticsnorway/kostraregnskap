@@ -540,7 +540,14 @@ kostra_regnskap <- function(data,
       stop('Bare handleDuplicated="stop" mulig når bidrag=TRUE')
     }
     df <- rbind(b$data["belop"], b$data_saer["belop"])
-    if (id_var %in% names(b$data) & id_var %in% names(b$data_saer)) {
+    id_from_data <- id_var %in% names(b$data)
+    if (id_from_data & !is.null(b$data_saer)) {
+      id_from_data <- id_var %in% names(b$data_saer)
+      if (!id_from_data) {
+        warning("id_var finnes ikke i data_saer")
+      }
+    }
+    if (id_from_data) {
       if(!is.null(b$data_saer)){
         df$id <- c(b$data[[id_var]], b$data_saer[[id_var]]) 
       } else {
