@@ -1,8 +1,8 @@
 Package: kostraregnskap
 Type: Package
 Title: Regnskapsfunksjoner for Kostra
-Version: 0.0.4
-Date: 2023-02-23
+Version: 0.0.5
+Date: 2023-02-28
 Author: Øyvind Langsrud
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
 Depends: R (>= 3.0.0), SSBtools (>= 1.4.1), Matrix (>= 1.5-2), stringr 
