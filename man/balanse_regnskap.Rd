@@ -14,6 +14,7 @@ balanse_regnskap(
   kapitler = NULL,
   omfang = NULL,
   output = "standard",
+  omfang_fra_input = output == "standard",
   printData = FALSE,
   lag0300 = FALSE,
   fixRegionkode = TRUE,
@@ -43,6 +44,11 @@ balanse_regnskap(
 
 \item{output}{Dersom annet enn \code{"standard"} spesifiseres vil resultatet som returneres
 være som resultatet fra den gamle \code{\link{BalanseRegnskapEnPeriode}}.}
+
+\item{omfang_fra_input}{Ved \code{FALSE} benyttes kodene \code{"B"}, \code{"sbedr"} og \code{"lanefond"}.
+Ved \code{TRUE} (default) benyttes alle kodene for regnskapsomfang som finnes i inputdata.
+Disse kodene kan etterspørres med parameteren \code{omfang}.
+I output blir \code{"A"} summen av alle inputkoder. I utgangspunktet er dette laget for å bruke \code{"C"} istedenfor \code{"B"}.}
 
 \item{printData}{Ved TRUE printes to første og to siste rader av alle inputdataene}
 
@@ -95,21 +101,27 @@ inputdata$UUID <- paste0("ed1716d4-a869-11ed-8000-",
                           SSBtools::Number(seq_len(nrow(inputdata)), 13))
 
 z1 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"))
-z1[36:41, ]
+z1[37:41, ]
 
 z2 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
                        fun_id_bidrag = id_bidrag2, generer_id = FALSE)
-z2[36:41, ]
+z2[37:41, ]
 
 z3 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
                        bidrag = FALSE)
-z3[36:41, ] 
+z3[37:41, ] 
 
 z4 <- balanse_regnskap(inputdata, hierarki, regioner = c("2021", "2022", "0301"),
                        omfang = c("B", "A" ), kapitler = c("KG3", "KG2"),
                        bidrag = FALSE, generer_id = FALSE)
 z4 
 
+dataC <- inputdata 
+dataC$regnskapsomfang[dataC$regnskapsomfang == "B"] <- "C"
+z5 <- balanse_regnskap(dataC, hierarki, regioner = c("2021", "2022", "0301"),
+                       omfang = c("C", "A" ), kapitler = c("KG3", "KG2"),
+                       bidrag = FALSE, generer_id = FALSE)
+z5 
 }
 \seealso{
 \code{\link{kostra_regnskap}}, \code{\link{HierarchyCompute}}, \code{\link{HierarchicalWildcardGlobbing}}
